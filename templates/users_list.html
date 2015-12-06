@@ -8,7 +8,9 @@
     <div class='col-xs-1 header-el'>Account Type </div>
     <div class='col-xs-1 header-el'>Active</div>
     <div class='col-xs-1 header-el'> Last Login </div>
-    <div class='col-xs-4 header-el'>{% if SESSION.username  %} Action(s) {% endif %}</div>
+    <div class='col-xs-1 header-el'> Created On </div>
+    <div class='col-xs-1 header-el'> Updated On</div>
+    <div class='col-xs-2 header-el'>{% if isSomeoneLoggedIn()  %} Action(s) {% endif %}</div>
 </div>
 <hr />
 {%for user in users %}
@@ -20,11 +22,13 @@
     <div class='col-xs-1 text-center'>{{user.accounttype}}</div>
     <div class='col-xs-1 text-center'>{{user.isActive}}</div>
     <div class='col-xs-1 text-center'>{{user.lastlogin}}</div>
-    {% if SESSION.username  %}
-        <div class='col-xs-2 v-middle'>
+    <div class='col-xs-1 text-center'>{{user.created}}</div>
+    <div class='col-xs-1 text-center'>{{user.lastupdated}}</div>
+    {% if isSomeoneLoggedIn()  %}
+        <div class='col-xs-1 v-middle'>
             <a class='btn btn-primary' href ='{{url_for("edit_user",userid=user.id)}}' ><i class="fa fa-pencil"></i> Edit</a>
         </div>
-        <div class='col-xs-2 v-middle'>
+        <div class='col-xs-1 v-middle'>
             {% if user.accounttype != 'ADMIN'  %}
             <a class='btn btn-danger' href ='{{url_for("delete_user")}}' ><i class="fa fa-trash-o"></i> Delete</a>
             {% endif %}

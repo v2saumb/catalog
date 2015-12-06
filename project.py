@@ -14,15 +14,16 @@ from os import curdir, pardir, sep
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import curdir, sep, pardir
-from src.catalogdb.database_setup import Shelter, Puppy, User, Base
+from src.catalogdb.database_setup import Categories, User, Items, Base
 from src.catalogutils.db_interface import catalog_interface
 from src.catalogutils.custompagination import cusotmPaginator
 from src.catalogutils.catalogforms import UserForm, AdminLoginForm
+from src.catalogutils.catalogforms import CategoriesForm
 # IMPORTS FOR oAuth
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from oauth2client.client import AccessTokenCredentials
-DATABASE_FILEPATH = curdir + sep + 'src/catalogdb/animalshelter.db'
+DATABASE_FILEPATH = curdir + sep + 'src/catalogdb/catalogdatabase.db'
 GOOGLE_FILE = curdir + sep + 'src/json/client_secrets.json'
 
 app = Flask(__name__)
@@ -38,24 +39,25 @@ PER_PAGE = 10
 
 CLIENT_ID = json.loads(
     open(GOOGLE_FILE, 'r').read())['web']['client_id']
-APPLICATION_NAME = "Animal Shelter Test App"
+APPLICATION_NAME = "Sams Item Catalog"
 
 
-def getShelterList(page):
+def getCategoriesList(page):
     """
     returns the shelter list template
     """
     resultsTemplate = ""
-    catalog = catalogDb.getAllShelters()
-    if(len(catalog) >= 1):
-        pagination = cusotmPaginator(page, PER_PAGE, catalog)
+    categories = catalogDb.getAllCategories()
+    if(len(categories) >= 1):
+        pagination = cusotmPaginator(page, PER_PAGE, categories)
         slices = pagination.getPageSlice()
         resultsTemplate = render_template(
-            "shelter_list.html", catalog=slices, SESSION=login_session, pagination=pagination)
+            "category_list.html", categories=slices, SESSION=login_session, pagination=pagination)
         resultsTemplate += render_template("pages_list.html",
                                            pagination=pagination)
     else:
-        resultsTemplate = render_template("empty_list.html")
+        resultsTemplate = render_template(
+            "error.html", message="Sorry we could not find what you were looking for")
     return resultsTemplate
 
 
@@ -136,7 +138,10 @@ def other_page_urls(page):
     args['page'] = page
     return url_for(request.endpoint, **args)
 
+# adding required functions to the template system
 app.jinja_env.globals['other_page_urls'] = other_page_urls
+app.jinja_env.globals['isSomeoneLoggedIn'] = isSomeoneLoggedIn
+app.jinja_env.globals['isAdminLoggedIn'] = isAdminLoggedIn
 
 
 @app.route('/', defaults={'page': 1})
@@ -145,7 +150,20 @@ app.jinja_env.globals['other_page_urls'] = other_page_urls
 def catalog(page):
     output = ''
     output = render_template('header.html', SESSION=login_session)
-    output += getShelterList(page)
+    output += getCategoriesList(page)
+    output += render_template('footer.html')
+    return output
+
+
+@app.route('/categories', defaults={'page': 1})
+@app.route('/categories/<int:page>')
+def categories(page):
+    """
+    serves the paginated categories list
+    """
+    output = ''
+    output = render_template('header.html', SESSION=login_session)
+    output += getCategoriesList(page)
     output += render_template('footer.html')
     return output
 
@@ -168,7 +186,7 @@ def users(page):
 
     output = render_template('header.html', SESSION=login_session)
     try:
-        if login_session['accountType'] != "ADMIN" or login_session['accountType'] is None or login_session is None:
+        if not isAdminLoggedIn():
             output += render_template('error.html',
                                       message="You need to login as administrator")
         else:
@@ -191,7 +209,7 @@ def edit_user(userid):
         newUser = User()
         form.populate_obj(newUser)
         if newUser.id is not None:
-            if catalogDb.updateUserDetails(newUser) == True:
+            if catalogDb.updateUserDetails(newUser):
                 flash('User Updated Successful!')
             else:
                 flash('There was an error updating user!')
@@ -209,28 +227,51 @@ def edit_user(userid):
     return output
 
 
-@app.route('/addEditShelter', defaults={'shelterId': -1}, methods=['GET', 'POST'])
-@app.route('/addEditShelter/<int:shelterId>', methods=['GET'])
-def new_shelter(shelterId):
-    form = ShelterForm(request.form)
-    print request.method
-    print form.validate()
-    if request.method == 'POST' and form.validate():
-        newShelter = Shelter()
-        form.populate_obj(newShelter)
-        if newShelter.id is not None:
-            catalogDb.updateShelterDetails(newShelter)
-        else:
-            catalogDb.addShelter(newShelter)
+@app.route('/addEditCategories', defaults={'categoryId': -1},
+           methods=['GET', 'POST'])
+@app.route('/addEditCategories/<int:categoryId>', methods=['GET'])
+def new_category(categoryId):
+    """
+    serves the request for new category and edit categories
+    """
+    try:
 
-        return redirect(url_for('catalog'))
-    if shelterId is not None and shelterId >= 0:
-        shelterX = catalogDb.getShelterById(shelterId)
-        form = ShelterForm(request.form, obj=shelterX)
+        form = CategoriesForm(request.form)
+        form.parent.choices = [(int(cat.id), cat.name)
+                               for cat in catalogDb.getAllSubCategories()]
+        app.logger.debug("categoryId: " + str(categoryId) +
+                         " request.method " + request.method)
 
-    output = render_template('header.html', SESSION=login_session)
-    output += render_template('addeditShelter.html', form=form)
-    output += render_template('footer.html')
+        if request.method == 'POST' and form.validate():
+            print "in the add update block"
+            newCategories = Categories()
+            form.populate_obj(newCategories)
+            if form.data['id']:
+                print "category is [" + newCategories.id + "]"
+                catalogDb.updateCategoriesDetails(newCategories)
+            else:
+                print "add category is " + newCategories.id
+                newCategories.id = None
+                catalogDb.addCategories(newCategories)
+            return redirect(url_for('categories'))
+
+        if categoryId is not None and categoryId >= 0:
+            categoryX = catalogDb.getCategoriesById(categoryId)
+            print categoryX.name
+            form = CategoriesForm(request.form, obj=categoryX)
+            form.parent.choices = [(int(cat.id), cat.name)
+                                   for cat in catalogDb.getAllSubCategories()]
+
+        output = render_template('header.html', SESSION=login_session)
+        output += render_template('addeditCategories.html', form=form)
+        output += render_template('footer.html')
+    except:
+        output = render_template('header.html', SESSION=login_session)
+        output += render_template('error.html',
+                                  message="Oops Something went wrong")
+        output += render_template('footer.html')
+        raise
+
     return output
 
 
@@ -243,11 +284,11 @@ def delete_user():
     return output
 
 
-@app.route('/deleteShelter')
-def delete_shelter():
+@app.route('/deleteCategories')
+def delete_category():
     output = ''
     output = render_template('header.html', SESSION=login_session)
-    output += "delete Shelter Code"
+    output += "delete Categories Code"
     output += render_template('footer.html')
     return output
 
@@ -437,6 +478,7 @@ def admin_logout():
     login_session['username'] = None
     login_session['email'] = None
     login_session['accountType'] = None
+    flash("Logged out successfully !")
     return redirect(url_for("catalog"))
 
 

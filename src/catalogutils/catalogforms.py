@@ -28,3 +28,12 @@ class AdminLoginForm(Form):
     password = PasswordField(
         'Password',
         [validators.InputRequired(message="Password cannot be blank!")])
+
+
+class CategoriesForm(Form):
+    name = StringField('Category Name', [validators.Length(min=4, max=255)])
+    parent = SelectField(u'Parent Category', coerce=int,
+                         validators=[validators.optional()])
+    isActive = BooleanField('Active')
+    hasChildren = BooleanField('Has Sub Categories')
+    id = HiddenField('id')

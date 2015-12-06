@@ -1,0 +1,38 @@
+<div class="row">
+    <div class='col-xs-6 heading'><h1> All Categories </h1></div>
+    <div class="col-xs-6 v-middle">{% if isAdminLoggedIn()  %}<a class='btn btn-primary' href ='{{url_for("new_category")}}' ><i class="fa fa-plus"></i> Add New Category </a>{% endif %}</div>
+</div>
+<div class="row">
+    <div class='col-xs-1 header-el'>ID</div>
+    <div class='col-xs-2 header-el'> Name </div>
+    <div class="col-xs-1 header-el"> Parent Category Id</div>
+    <div class='col-xs-1 header-el'> Active </div>
+    <div class='col-xs-1 header-el'>Has Sub-Categories</div>
+    <div class='col-xs-1 header-el'>Created</div>
+    <div class='col-xs-1 header-el'> Last Updated</div>
+    <div class='col-xs-4 header-el'>{% if isAdminLoggedIn()  %} Action {% endif %}</div>
+</div>
+<hr />
+{%for category in categories %}
+<div class="row">
+    <div class='col-xs-1'>{{category.id}}</div>
+    <div class='col-xs-2 {% if category.hasChildren %} bold  {%endif%}'>{{category.name}}</div>
+    <div class="col-xs-1">{{category.parent}}</div>
+    <div class='col-xs-1'>{{category.isActive}}</div>
+    <div class='col-xs-1'>{{category.hasChildren}}</div>
+    <div class='col-xs-1'>{{category.created}}</div>
+    <div class='col-xs-1'>{{category.lastupdated}}</div>
+    {% if isAdminLoggedIn() and category.id > 0 %}
+        <div class='col-xs-2 v-middle'>
+            <a class='btn btn-primary' href ='{{url_for("new_category",categoryId=category.id)}}' ><i class="fa fa-pencil"></i> Edit</a>
+        </div>
+        <div class='col-xs-2 v-middle'>
+            <a class='btn btn-danger' href ='{{url_for("delete_category")}}' ><i class="fa fa-trash-o"></i> Delete</a>
+        </div>
+    {% else %}
+        <div class='col-xs-4 v-middle'>
+            
+        </div>
+    {% endif %}
+</div>
+{% endfor %}

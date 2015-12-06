@@ -1,7 +1,8 @@
+from sqlalchemy.sql.expression import false, true
 import datetime
 # import random
 
-from ..catalogdb.database_setup import Shelter, Puppy, User
+from ..catalogdb.database_setup import Categories, User
 
 
 class catalog_interface:
@@ -14,54 +15,60 @@ class catalog_interface:
         """
         self.dsession = newSession
 
-    def getAllShelters(self):
+    def getAllCategories(self):
         """
-        ---- Returns a list of all the Shelters from the DB.
+        ---- Returns a list of all the Categoriess from the DB.
         """
-        result = self.dsession.query(Shelter).order_by(Shelter.id).all()
+        result = self.dsession.query(Categories).order_by(Categories.id).all()
+        return result
+
+    def getAllSubCategories(self):
+        """
+        ---- Returns a list of all the sub Categories from the DB.
+        """
+        result = self.dsession.query(Categories).filter(
+            Categories.hasChildren == true(),
+            Categories.isActive == true()).order_by(Categories.name).all()
         return result
 
     def getAllPuppies(self):
         """
-        ---- Returns a list of all the Shelters from the DB.
+        ---- Returns a list of all the Categoriess from the DB.
         """
         result = self.dsession.query(Puppy).order_by(Puppy.id).all()
         return result
 
-    def addShelter(self, newShelter):
+    def addCategories(self, newCategories):
         """
-        Adds a new Shelter record in the database"""
-        self.dsession.add(newShelter)
+        Adds a new Categories record in the database"""
+        self.dsession.add(newCategories)
         self.dsession.commit()
 
-    def getShelterById(self, shelterId):
+    def getCategoriesById(self, categoryId):
         """
-        returns a Shelter record by id
+        returns a Categories record by id
         """
-        return self.dsession.query(Shelter).filter(
-            Shelter.id == shelterId).one()
+        return self.dsession.query(Categories).filter(
+            Categories.id == categoryId).one()
 
-    def updateShelterDetails(self, shelter):
+    def updateCategoriesDetails(self, category):
         """
-        updates a shelter record by id
+        updates a category record by id
         """
-        print "Trying to get restaurant by id"
-        tempshelter = self.dsession.query(Shelter).filter(
-            Shelter.id == shelter.id).one()
-        if tempshelter is not None:
-            tempshelter.name = shelter.name
-            tempshelter.address = shelter.address
-            tempshelter.city = shelter.city
-            tempshelter.state = shelter.state
-            tempshelter.email = shelter.email
-            tempshelter.zipCode = shelter.zipCode
-            tempshelter.website = shelter.website
-            tempshelter.current_occupancy = shelter.current_occupancy
-            tempshelter.maximum_capacity = shelter.maximum_capacity
-            self.dsession.add(tempshelter)
+        result = False
+        try:
+            tempcategory = self.dsession.query(Categories).filter(
+                Categories.id == category.id).one()
+            tempcategory.name = category.name
+            tempcategory.parent = category.parent
+            tempcategory.isActive = category.isActive
+            tempcategory.hasChildren = category.hasChildren
+            self.dsession.add(tempcategory)
             self.dsession.commit()
-        else:
-            print "Shelter not found "
+            result = True
+        except:
+            result = False
+        return result
 
     def getAllUser(self):
         """
