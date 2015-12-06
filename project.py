@@ -46,12 +46,12 @@ def getShelterList(page):
     returns the shelter list template
     """
     resultsTemplate = ""
-    shelters = catalogDb.getAllShelters()
-    if(len(shelters) >= 1):
-        pagination = cusotmPaginator(page, PER_PAGE, shelters)
+    catalog = catalogDb.getAllShelters()
+    if(len(catalog) >= 1):
+        pagination = cusotmPaginator(page, PER_PAGE, catalog)
         slices = pagination.getPageSlice()
         resultsTemplate = render_template(
-            "shelter_list.html", shelters=slices, SESSION=login_session, pagination=pagination)
+            "shelter_list.html", catalog=slices, SESSION=login_session, pagination=pagination)
         resultsTemplate += render_template("pages_list.html",
                                            pagination=pagination)
     else:
@@ -90,6 +90,47 @@ def getUserList(page):
     return resultsTemplate
 
 
+def processAdminLogin(adminuser):
+    """
+    sets the admin user information the session
+    """
+    login_session['username'] = adminuser.name
+    login_session['email'] = adminuser.email
+    login_session['accountType'] = "ADMIN"
+
+
+def isAdminLoggedIn():
+    """
+    returns true if a admin account is logged in
+    """
+    try:
+        acType = login_session['accountType']
+    except:
+        acType = None
+
+    if acType is not None and acType == "ADMIN":
+        result = True
+    else:
+        result = False
+    return result
+
+
+def isSomeoneLoggedIn():
+    """
+    returns true if someone is logged in
+    """
+    try:
+        username = login_session['username']
+    except:
+        username = None
+
+    if username is not None:
+        result = True
+    else:
+        result = False
+    return result
+
+
 def other_page_urls(page):
     args = request.view_args.copy()
     args['page'] = page
@@ -99,9 +140,9 @@ app.jinja_env.globals['other_page_urls'] = other_page_urls
 
 
 @app.route('/', defaults={'page': 1})
-@app.route('/shelters', defaults={'page': 1})
-@app.route('/shelters/<int:page>')
-def shelters(page):
+@app.route('/catalog', defaults={'page': 1})
+@app.route('/catalog/<int:page>')
+def catalog(page):
     output = ''
     output = render_template('header.html', SESSION=login_session)
     output += getShelterList(page)
@@ -124,11 +165,17 @@ def puppies(page):
 @app.route('/users/<int:page>')
 def users(page):
     output = ''
+
     output = render_template('header.html', SESSION=login_session)
     try:
-        output += getUserList(page)
+        if login_session['accountType'] != "ADMIN" or login_session['accountType'] is None or login_session is None:
+            output += render_template('error.html',
+                                      message="You need to login as administrator")
+        else:
+            output += getUserList(page)
     except:
-        output += render_template('error.html')
+        output += render_template('error.html',
+                                  message="Oops Something went wrong")
         raise
     output += render_template('footer.html')
     return output
@@ -176,7 +223,7 @@ def new_shelter(shelterId):
         else:
             catalogDb.addShelter(newShelter)
 
-        return redirect(url_for('shelters'))
+        return redirect(url_for('catalog'))
     if shelterId is not None and shelterId >= 0:
         shelterX = catalogDb.getShelterById(shelterId)
         form = ShelterForm(request.form, obj=shelterX)
@@ -239,7 +286,7 @@ def login():
     """
 
     # check if already logged in
-    if login_session['username'] is not None:
+    if isSomeoneLoggedIn() == True:
         endpointurl = "already_loggedin.html"
         flash('You are already logged in!')
     else:
@@ -260,6 +307,12 @@ def admin_login():
     """
     serves the admin user login
     """
+    if isSomeoneLoggedIn() == True:
+        endpointurl = "already_loggedin.html"
+        flash('You are already logged in!')
+    else:
+        endpointurl = "admin_login.html"
+
     form = AdminLoginForm(request.form)
     if request.method == 'POST' and form.validate():
         admnuser = User()
@@ -268,13 +321,13 @@ def admin_login():
         if chkUser is not None:
             flash("Login Successful!")
             processAdminLogin(chkUser)
-            return redirect(url_for('shelters'))
+            return redirect(url_for('catalog'))
         else:
             flash("Incorrect email and password combination!")
             return redirect(url_for('admin_login'))
 
     output = render_template('header.html', SESSION=login_session)
-    output += render_template('admin_login.html', form=form)
+    output += render_template(endpointurl, form=form, SESSION=login_session)
     output += render_template('footer.html')
     return output
 
@@ -384,7 +437,7 @@ def admin_logout():
     login_session['username'] = None
     login_session['email'] = None
     login_session['accountType'] = None
-    return redirect(url_for("shelters"))
+    return redirect(url_for("catalog"))
 
 
 @app.route('/gdisconnect')
@@ -416,7 +469,7 @@ def gdisconnect():
         del login_session['email']
         del login_session['picture']
         flash('You have Been Successfully Logged Out.')
-        return redirect(url_for("shelters"))
+        return redirect(url_for("catalog"))
     else:
 
         response = make_response(json.dumps(
@@ -424,14 +477,6 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-
-def processAdminLogin(adminuser):
-    """
-    sets the admin user information the session
-    """
-    login_session['username'] = adminuser.name
-    login_session['email'] = adminuser.email
-    login_session['accountType'] = "ADMIN"
 
 if __name__ == '__main__':
     app.secret_key = 'thisisthesecretkey'
