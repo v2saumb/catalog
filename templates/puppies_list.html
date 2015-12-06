@@ -1,0 +1,38 @@
+<div class="row">
+    <div class='col-xs-6'><h1> All Puppies </h1></div>
+    <div class="col-xs-6 v-middle">{% if SESSION.username  %}<a class='btn btn-primary' href ='{{url_for("new_puppy")}}' ><i class="fa fa-plus"></i> Add New Puppy </a>{% endif %}</div>
+</div>
+<div class="row">
+    <div class='col-xs-1 header-el'>ID</div>
+    <div class='col-xs-3 header-el'> Puppy </div>
+    <div class="col-xs-1 header-el"> Breed </div>
+    <div class='col-xs-1 header-el'> Gender </div>
+    <div class='col-xs-1 header-el'>Birthday </div>
+    <div class='col-xs-1 header-el'> Weight </div>
+    <div class='col-xs-1 header-el'> Shelter </div>
+    <div class='col-xs-3 header-el'>{% if SESSION.username  %}Action{% endif %}</div>
+</div>
+<hr />
+{%for puppy in puppies %}
+<div class="row">
+    <div class='col-xs-1'>{{puppy.id}}</div>
+    <div class='col-xs-3'>{{puppy.name}} <br />
+    <img class="puppy-image" src="{{url_for('static', filename='images/dog.jpg')}}" /></div>
+    <div class="col-xs-1">{{puppy.breed}}  </div>
+    <div class='col-xs-1'>{{puppy.gender}}</div>
+    <div class='col-xs-1'>{{puppy.birthday}}</div>
+    <div class='col-xs-1'>{{puppy.weight}}</div>
+    <div class='col-xs-1'>{{puppy.shelter_id}}</div>
+    {% if SESSION.username  %}
+        <div class='col-xs-1 v-middle'>
+            <a class='btn btn-primary' href ='{{url_for("edit_puppy")}}' ><i class="fa fa-pencil"></i> Edit</a>
+        </div>
+        <div class='col-xs-1 v-middle'>
+            <a class='btn btn-danger' href ='{{url_for("delete_puppy")}}' ><i class="fa fa-trash-o"></i> Delete</a>
+        </div>
+        <div class='col-xs-1'></div>
+    {% else %}
+        <div class='col-xs-3'></div>
+    {% endif %}
+</div>
+{% endfor %}

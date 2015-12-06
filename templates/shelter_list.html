@@ -1,0 +1,39 @@
+<div class="row">
+    <div class='col-xs-6 heading'><h1> All Shelters </h1></div>
+    <div class="col-xs-6 v-middle">{% if SESSION.username  %}<a class='btn btn-primary' href ='{{url_for("new_shelter")}}' ><i class="fa fa-plus"></i> Add New Shelter </a>{% endif %}</div>
+</div>
+<div class="row">
+    <div class='col-xs-1 header-el'>ID</div>
+    <div class='col-xs-2 header-el'> Name </div>
+    <div class="col-xs-3 header-el"> Contact </div>
+    <div class='col-xs-1 header-el'>Current Occupancy </div>
+    <div class='col-xs-1 header-el'>Maximum Occupancy</div>
+    <div class='col-xs-4 header-el'>{% if SESSION.username  %} Action {% endif %}</div>
+</div>
+<hr />
+{%for shelter in shelters %}
+<div class="row">
+    <div class='col-xs-1'>{{shelter.id}}</div>
+    <div class='col-xs-2'>{{shelter.name}}</div>
+    <div class="col-xs-3">{{shelter.address}} <br />
+        {{shelter.city}}<br />
+        {{shelter.state}} {{shelter.zip}}<br />
+        Website : <a href='{{shelter.website}}'>{{shelter.website}}</a><br />
+        E-mail: {{shelter.email}}
+    </div>
+    <div class='col-xs-1'>{{shelter.current_occupancy}}</div>
+    <div class='col-xs-1'>{{shelter.maximum_capacity}}</div>
+    {% if SESSION.username  %}
+        <div class='col-xs-2 v-middle'>
+            <a class='btn btn-primary' href ='{{url_for("new_shelter",shelterId=shelter.id)}}' ><i class="fa fa-pencil"></i> Edit</a>
+        </div>
+        <div class='col-xs-2 v-middle'>
+            <a class='btn btn-danger' href ='{{url_for("delete_shelter")}}' ><i class="fa fa-trash-o"></i> Delete</a>
+        </div>
+    {% else %}
+        <div class='col-xs-4 v-middle'>
+            
+        </div>
+    {% endif %}
+</div>
+{% endfor %}

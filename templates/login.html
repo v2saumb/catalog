@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="col-xs-12">
+        <h4>Use One of the following Accounts to login </h4>
+    </div>
+</div>   
+<div class="row login-row">
+    <div class="col-xs-3">
+        <!-- GOOGLE PLUS SIGN IN BUTTON-->
+        <div id="signInButton">
+            <span class="g-signin"
+                data-scope="openid email"
+                data-clientid="593527995169-oeoi7jpkg7n64kbpan86fb6u0fvhc3rr.apps.googleusercontent.com"
+                data-redirecturi="postmessage"
+                data-accesstype="offline"
+                data-cookiepolicy="single_host_origin"
+                data-callback="signInCallback"
+                data-approvalprompt="force">
+            </span>
+        </div>
+        <!--END GOOGLE PLUS SIGN IN BUTTON --></h4>
+    </div>
+    <div class="col-xs-3">
+        facebook
+    </div>
+    <div class="col-xs-6">
+        <a href="{{url_for('admin_login')}}" class="btn btn-primary "><i class="fa fa-user-secret large-icon"></i> Administrator</a>
+    </div>
+</div>
+<div id="result"></div>

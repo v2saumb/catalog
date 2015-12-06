@@ -1,0 +1,17 @@
+{% from "form_helper.html" import render_field %}
+<form method='post' action="/register">
+	
+	{{ render_field(form.username) }}
+	{{ render_field(form.email) }}
+	<div class="row">
+		<div class="col-xs-5"></div>
+		<div class="col-xs-1">
+			<input type='reset' value='Reset' class="btn btn-default">
+		</div>
+		<div class="col-xs-1">
+			
+			<input type='submit' value='Register' class="btn btn-primary">
+		</div>
+		<div class="col-xs-5"></div>
+	</div>
+</form>

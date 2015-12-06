@@ -1,0 +1,81 @@
+ul {
+    list-style: none;
+    display: inline;
+}
+
+hr {
+    background-color: #2e6da4;
+    height: 1px;
+    border: 0
+}
+
+.navbar-default {
+    background-color: #337ab7;
+    color: #ffffff;
+    font-size: larger;
+}
+
+.navbar-default .navbar-brand
+{
+    color: #ffffff;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: #EEE;
+}
+
+.header-el {
+    text-align: center;
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+.row {
+    padding: 5px;
+    margin: 0;
+}
+
+.row:nth-child(even) {
+    background-color: #eee
+}
+
+input[type='text'] {
+    width: 500px;
+}
+
+.message {
+    font-size: larger;
+    color: red;
+    text-align: center;
+}
+
+.v-middle {
+    text-align: center;
+    vertical-align: middle;
+    margin-top: 15px;
+}
+.user-profile{
+    display: inline-block;
+    vertical-align: middle;
+}
+.user-profile .user-name{
+    display: inline;
+
+}
+
+.user-profile .user-image img{
+    display: inline;
+    width:40px;
+    height:40px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    float: right;
+}
+
+div[class*="col-xs-"]{
+    text-align: center;
+}
+
+.pagination .btn{
+ padding: 2px 5px; 
+}

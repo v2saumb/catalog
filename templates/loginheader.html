@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/styles.css')}}">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+		<head>
+			<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+			<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+			</script>
+			<script src="//apis.google.com/js/platform.js?onload=start"> </script>
+			<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+		</head>
+	</head>
+	<body class="container-fluid">
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-xs-3">
+						<div class="navbar-header">
+							
+							<a href='{{url_for("shelters")}}' class="navbar-brand">Sams Item Catalog</a>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<ul class="nav navbar-nav">
+							<li>	<a href='{{url_for("shelters")}}' ><i class="fa fa-home"></i> Home</a></li>
+							<li><a href='{{url_for("puppies")}}' class="navbar-nav">Puppies</a></li>
+							<li><a href='{{url_for("users")}}' class="navbar-nav"><i class="fa fa-users"></i> Users</a></li>
+						</ul>
+						
+					</div>
+					<div class="col-xs-5"></div>
+					
+				</div>
+			</div>
+		</nav>
+		{% with messages = get_flashed_messages()%}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="row"><div class="col-xs-12 message" >
+					
+					{{message}}
+				</div></div>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
