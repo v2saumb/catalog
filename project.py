@@ -13,12 +13,11 @@ from flask import make_response
 from os import curdir, pardir, sep
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from os import curdir, sep, pardir
 from src.catalogdb.database_setup import Categories, User, Items, Base
 from src.catalogutils.db_interface import catalog_interface
 from src.catalogutils.custompagination import cusotmPaginator
 from src.catalogutils.catalogforms import UserForm, AdminLoginForm
-from src.catalogutils.catalogforms import CategoriesForm
+from src.catalogutils.catalogforms import CategoriesForm, ItemForm
 # IMPORTS FOR oAuth
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -42,12 +41,12 @@ CLIENT_ID = json.loads(
 APPLICATION_NAME = "Sams Item Catalog"
 
 
-def getCategoriesList(page):
+def get_categories_list(page):
     """
     returns the shelter list template
     """
     resultsTemplate = ""
-    categories = catalogDb.getAllCategories()
+    categories = catalogDb.get_all_categories()
     if(len(categories) >= 1):
         pagination = cusotmPaginator(page, PER_PAGE, categories)
         slices = pagination.getPageSlice()
@@ -57,17 +56,23 @@ def getCategoriesList(page):
                                            pagination=pagination)
     else:
         resultsTemplate = render_template(
-            "error.html", message="Sorry we could not find what you were looking for")
+            "error.html",
+            message="Sorry we could not find what you were looking for")
     return resultsTemplate
 
 
-def getPuppyList(page):
-    puppies = catalogDb.getAllPuppies()
-    if(len(puppies) >= 1):
-        pagination = cusotmPaginator(page, PER_PAGE, puppies)
+def get_puppy_list(page):
+    """
+    gets the list of user, paginates and 
+    creates a template for display
+    """
+    items = catalogDb.get_all_items()
+    if(len(items) >= 1):
+        pagination = cusotmPaginator(page, PER_PAGE, items)
         slices = pagination.getPageSlice()
         resultsTemplate = render_template(
-            "puppies_list.html", puppies=slices, SESSION=login_session, pagination=pagination)
+            "items_list.html", items=slices, SESSION=login_session,
+            pagination=pagination)
         resultsTemplate += render_template("pages_list.html",
                                            pagination=pagination)
     else:
@@ -78,8 +83,8 @@ def getPuppyList(page):
 # def isAdminUserLoggedIn():
     # if login_session['username']
 
-def getUserList(page):
-    users = catalogDb.getAllUser()
+def get_user_list(page):
+    users = catalogDb.get_all_user()
     if(len(users) >= 1):
         pagination = cusotmPaginator(page, PER_PAGE, users)
         slices = pagination.getPageSlice()
@@ -92,16 +97,17 @@ def getUserList(page):
     return resultsTemplate
 
 
-def processAdminLogin(adminuser):
+def process_admin_login(adminuser):
     """
     sets the admin user information the session
     """
     login_session['username'] = adminuser.name
     login_session['email'] = adminuser.email
     login_session['accountType'] = "ADMIN"
+    login_session['userid'] = 1
 
 
-def isAdminLoggedIn():
+def is_admin_loggedin():
     """
     returns true if a admin account is logged in
     """
@@ -117,7 +123,7 @@ def isAdminLoggedIn():
     return result
 
 
-def isSomeoneLoggedIn():
+def is_someone_Loggedin():
     """
     returns true if someone is logged in
     """
@@ -133,6 +139,22 @@ def isSomeoneLoggedIn():
     return result
 
 
+def verify_owner_login(item_user):
+    """
+    returns true if the current user is the owner of the item or a Admin user
+    """
+    try:
+        result = login_session['userid'] == item_user
+        print "This " + str(login_session['userid']) + str(item_user)
+        result = result or is_admin_loggedin()
+    except:
+        print "exception " + str(item_user) + str(login_session['userid'])
+        raise
+        result = False
+    # app.logger.debug(" verify login " + str(result))
+    return result
+
+
 def other_page_urls(page):
     args = request.view_args.copy()
     args['page'] = page
@@ -140,8 +162,9 @@ def other_page_urls(page):
 
 # adding required functions to the template system
 app.jinja_env.globals['other_page_urls'] = other_page_urls
-app.jinja_env.globals['isSomeoneLoggedIn'] = isSomeoneLoggedIn
-app.jinja_env.globals['isAdminLoggedIn'] = isAdminLoggedIn
+app.jinja_env.globals['isSomeoneLoggedIn'] = is_someone_Loggedin
+app.jinja_env.globals['isAdminLoggedIn'] = is_admin_loggedin
+app.jinja_env.globals['verifyOwnerLogin'] = verify_owner_login
 
 
 @app.route('/', defaults={'page': 1})
@@ -150,7 +173,7 @@ app.jinja_env.globals['isAdminLoggedIn'] = isAdminLoggedIn
 def catalog(page):
     output = ''
     output = render_template('header.html', SESSION=login_session)
-    output += getCategoriesList(page)
+    output += get_categories_list(page)
     output += render_template('footer.html')
     return output
 
@@ -163,17 +186,17 @@ def categories(page):
     """
     output = ''
     output = render_template('header.html', SESSION=login_session)
-    output += getCategoriesList(page)
+    output += get_categories_list(page)
     output += render_template('footer.html')
     return output
 
 
-@app.route('/puppies', defaults={'page': 1})
-@app.route('/puppies/<int:page>')
-def puppies(page):
+@app.route('/items', defaults={'page': 1})
+@app.route('/items/<int:page>')
+def items(page):
     output = ''
     output = render_template('header.html', SESSION=login_session)
-    output += getPuppyList(page)
+    output += get_puppy_list(page)
     output += render_template('footer.html')
     return output
 
@@ -186,11 +209,11 @@ def users(page):
 
     output = render_template('header.html', SESSION=login_session)
     try:
-        if not isAdminLoggedIn():
+        if not is_admin_loggedin():
             output += render_template('error.html',
                                       message="You need to login as administrator")
         else:
-            output += getUserList(page)
+            output += get_user_list(page)
     except:
         output += render_template('error.html',
                                   message="Oops Something went wrong")
@@ -209,7 +232,7 @@ def edit_user(userid):
         newUser = User()
         form.populate_obj(newUser)
         if newUser.id is not None:
-            if catalogDb.updateUserDetails(newUser):
+            if catalogDb.update_user_details(newUser):
                 flash('User Updated Successful!')
             else:
                 flash('There was an error updating user!')
@@ -218,7 +241,7 @@ def edit_user(userid):
         return redirect(url_for('users'))
     if userid is not None and userid >= 0:
         app.logger.debug("User Id" + str(userid))
-        tempUser = catalogDb.getUserById(userid)
+        tempUser = catalogDb.get_user_by_id(userid)
         form = UserForm(request.form, obj=tempUser)
 
     output = render_template('header.html', SESSION=login_session)
@@ -238,7 +261,7 @@ def new_category(categoryId):
 
         form = CategoriesForm(request.form)
         form.parent.choices = [(int(cat.id), cat.name)
-                               for cat in catalogDb.getAllSubCategories()]
+                               for cat in catalogDb.get_all_parent_categories()]
         app.logger.debug("categoryId: " + str(categoryId) +
                          " request.method " + request.method)
 
@@ -248,22 +271,70 @@ def new_category(categoryId):
             form.populate_obj(newCategories)
             if form.data['id']:
                 print "category is [" + newCategories.id + "]"
-                catalogDb.updateCategoriesDetails(newCategories)
+                catalogDb.update_categories_details(newCategories)
             else:
                 print "add category is " + newCategories.id
                 newCategories.id = None
-                catalogDb.addCategories(newCategories)
+                catalogDb.add_categories(newCategories)
             return redirect(url_for('categories'))
 
         if categoryId is not None and categoryId >= 0:
-            categoryX = catalogDb.getCategoriesById(categoryId)
-            print categoryX.name
+            app.logger.debug("Showing Category Details")
+            categoryX = catalogDb.get_categories_by_id(categoryId)
             form = CategoriesForm(request.form, obj=categoryX)
             form.parent.choices = [(int(cat.id), cat.name)
-                                   for cat in catalogDb.getAllSubCategories()]
+                                   for cat in catalogDb.get_all_parent_categories()]
 
         output = render_template('header.html', SESSION=login_session)
         output += render_template('addeditCategories.html', form=form)
+        output += render_template('footer.html')
+    except:
+        output = render_template('header.html', SESSION=login_session)
+        output += render_template('error.html',
+                                  message="Oops Something went wrong")
+        output += render_template('footer.html')
+        raise
+
+    return output
+
+
+@app.route('/addEditItem', defaults={'item_id': -1},
+           methods=['GET', 'POST'])
+@app.route('/addEditItem/<int:item_id>', methods=['GET'])
+def new_item(item_id):
+    """
+    serves the request for new item and edit item
+    """
+    try:
+
+        form = ItemForm(request.form)
+        form.category_id.choices = [(int(cat.id), cat.name)
+                                    for cat in catalogDb.get_all_sub_categories()]
+        app.logger.debug("item_id: " + str(item_id) +
+                         " request.method " + request.method)
+
+        if request.method == 'POST' and form.validate():
+            print "in the add update block"
+            newItem = Items()
+            form.populate_obj(newItem)
+            if form.data['id']:
+                print "category is [" + newItem.id + "]"
+                catalogDb.update_categories_details(newItem)
+            else:
+                print "add category is " + newItem.id
+                newItem.id = None
+                catalogDb.add_item(newItem)
+            return redirect(url_for('categories'))
+
+        if item_id is not None and item_id >= 0:
+            app.logger.debug("Showing Category Details")
+            itemX = catalogDb.get_item_by_id(item_id)
+            form = ItemForm(request.form, obj=itemX)
+            form.category_id.choices = [(int(cat.id), cat.name)
+                                        for cat in catalogDb.get_all_sub_categories()]
+
+        output = render_template('header.html', SESSION=login_session)
+        output += render_template('addeditItems.html', form=form)
         output += render_template('footer.html')
     except:
         output = render_template('header.html', SESSION=login_session)
@@ -293,8 +364,8 @@ def delete_category():
     return output
 
 
-@app.route('/editPuppy')
-def edit_puppy():
+@app.route('/edititem')
+def edit_item():
     output = ''
     output = render_template('header.html', SESSION=login_session)
     output += "Edit Puppy Code"
@@ -302,23 +373,13 @@ def edit_puppy():
     return output
 
 
-@app.route('/deletePuppy')
-def delete_puppy():
+@app.route('/deleteitem')
+def delete_item():
     output = ''
     output = render_template('header.html', SESSION=login_session)
     output += "delete Puppy Code"
     output += render_template('footer.html')
     return output
-
-
-@app.route('/addPuppy')
-def new_puppy():
-    output = ''
-    output = render_template('header.html', SESSION=login_session)
-    output += "New Puppy Code"
-    output += render_template('footer.html')
-    return output
-
 
 @app.route('/login')
 def login():
@@ -327,7 +388,7 @@ def login():
     """
 
     # check if already logged in
-    if isSomeoneLoggedIn() == True:
+    if is_someone_Loggedin() == True:
         endpointurl = "already_loggedin.html"
         flash('You are already logged in!')
     else:
@@ -343,12 +404,12 @@ def login():
     return output
 
 
-@app.route('/adminlogin', methods=['GET', 'POST'])
+@app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
     """
     serves the admin user login
     """
-    if isSomeoneLoggedIn() == True:
+    if is_someone_Loggedin() == True:
         endpointurl = "already_loggedin.html"
         flash('You are already logged in!')
     else:
@@ -358,10 +419,10 @@ def admin_login():
     if request.method == 'POST' and form.validate():
         admnuser = User()
         form.populate_obj(admnuser)
-        chkUser = catalogDb.adminlogin(admnuser)
+        chkUser = catalogDb.admin_login(admnuser)
         if chkUser is not None:
             flash("Login Successful!")
-            processAdminLogin(chkUser)
+            process_admin_login(chkUser)
             return redirect(url_for('catalog'))
         else:
             flash("Incorrect email and password combination!")
@@ -457,7 +518,7 @@ def gconnect():
                    email=login_session['email'],
                    accounttype="GOOGLE", lastlogin=datetime.date.today(),
                    pictureurl=login_session['picture'])
-    catalogDb.addUser(newUser)
+    catalogDb.add_user(newUser)
     output = ""
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -478,6 +539,7 @@ def admin_logout():
     login_session['username'] = None
     login_session['email'] = None
     login_session['accountType'] = None
+    login_session['userid'] = None
     flash("Logged out successfully !")
     return redirect(url_for("catalog"))
 

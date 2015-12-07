@@ -57,10 +57,18 @@ i.large-icon {
     background-color: #eee
 }
 
-input[type='text'] {
+input[type='text'],
+textarea {
     width: 500px;
 }
 
+textarea{
+    height:100px;
+}
+
+textarea[id='pictureurl']{
+    height:80px;
+} 
 .message {
     font-size: larger;
     color: red;
@@ -145,9 +153,20 @@ ul.form-error li {
 .adminuser i {
     font-size: 27px;
 }
-.row.login-row{
-    padding-top:10px;
+
+.row.login-row {
+    padding-top: 10px;
 }
-.bold{
+
+.bold {
     font-weight: bolder;
+}
+
+img.item-pic-small {
+    width:150px;
+    height:auto;
+    margin-top: 5px
+}
+img.item-pic-large{
+    width:25%;
 }

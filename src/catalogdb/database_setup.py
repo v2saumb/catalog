@@ -75,11 +75,11 @@ class Items(Base):
     isActive = Column(Boolean, nullable=False, default=True)
     created = Column(DateTime, default=datetime.datetime.now)
     lastupdated = Column(DateTime, onupdate=datetime.datetime.now)
-    id = Column(Integer, primary_key=True)
     category_id = Column(Integer, ForeignKey('categories.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
     category = relationship(Categories)
     user = relationship(User)
+    id = Column(Integer, primary_key=True)
 
     @property
     def serialize(self):

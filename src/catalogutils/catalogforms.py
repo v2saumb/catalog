@@ -1,5 +1,5 @@
 from wtforms import Form, StringField, validators, PasswordField
-from wtforms import BooleanField, HiddenField, SelectField
+from wtforms import BooleanField, HiddenField, SelectField, TextAreaField
 
 
 class UserForm(Form):
@@ -36,4 +36,17 @@ class CategoriesForm(Form):
                          validators=[validators.optional()])
     isActive = BooleanField('Active')
     hasChildren = BooleanField('Has Sub Categories')
+    id = HiddenField('id')
+
+
+class ItemForm(Form):
+    name = StringField('Item', [validators.Length(min=4, max=255)])
+    description = TextAreaField(
+        'Item Description', [validators.Length(min=4, max=2500)])
+    pricerange = StringField('Item Price Range', [
+                             validators.Length(min=4, max=255)])
+    pictureurl = TextAreaField('Item Picture URL', [validators.Length(max=1000)])
+    isActive = BooleanField('Active')
+    category_id = SelectField(u'Category', coerce=int,
+                              validators=[validators.optional()])
     id = HiddenField('id')

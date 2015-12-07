@@ -1,28 +1,28 @@
-from sqlalchemy.sql.expression import false, true
+from sqlalchemy.sql.expression import true, false
 import datetime
 # import random
 
-from ..catalogdb.database_setup import Categories, User
+from ..catalogdb.database_setup import Categories, User, Items
 
 
 class catalog_interface:
 
-    def __init__(self, newSession):
+    def __init__(self, new_session):
         """
         Constructor for the  interface and set the session
             Attributes:
-                dbSession:      A database session
+                new_session:      A database session
         """
-        self.dsession = newSession
+        self.dsession = new_session
 
-    def getAllCategories(self):
+    def get_all_categories(self):
         """
-        ---- Returns a list of all the Categoriess from the DB.
+        ---- Returns a list of all the Categories from the DB.
         """
         result = self.dsession.query(Categories).order_by(Categories.id).all()
         return result
 
-    def getAllSubCategories(self):
+    def get_all_parent_categories(self):
         """
         ---- Returns a list of all the sub Categories from the DB.
         """
@@ -31,27 +31,49 @@ class catalog_interface:
             Categories.isActive == true()).order_by(Categories.name).all()
         return result
 
-    def getAllPuppies(self):
+    def get_all_sub_categories(self):
         """
-        ---- Returns a list of all the Categoriess from the DB.
+        ---- Returns a list of all the sub Categories from the DB.
         """
-        result = self.dsession.query(Puppy).order_by(Puppy.id).all()
+        result = self.dsession.query(Categories).filter(
+            Categories.hasChildren == false(),
+            Categories.isActive == true()).order_by(Categories.name).all()
         return result
 
-    def addCategories(self, newCategories):
+    def get_all_items(self):
+        """
+        ---- Returns a list of all the Categories from the DB.
+        """
+        result = self.dsession.query(Items).order_by(Items.id).all()
+        return result
+
+    def add_categories(self, new_cat):
         """
         Adds a new Categories record in the database"""
-        self.dsession.add(newCategories)
+        self.dsession.add(new_cat)
         self.dsession.commit()
 
-    def getCategoriesById(self, categoryId):
+    def add_item(self, new_item):
+        """
+        Adds a new item record in the database"""
+        self.dsession.add(new_item)
+        self.dsession.commit()
+
+    def get_item_by_id(self, item_id):
+        """
+        returns a item record by id
+        """
+        return self.dsession.query(Items).filter(
+            Items.id == item_id).one()
+
+    def get_categories_by_id(self, category_id):
         """
         returns a Categories record by id
         """
         return self.dsession.query(Categories).filter(
-            Categories.id == categoryId).one()
+            Categories.id == category_id).one()
 
-    def updateCategoriesDetails(self, category):
+    def update_categories_details(self, category):
         """
         updates a category record by id
         """
@@ -70,7 +92,7 @@ class catalog_interface:
             result = False
         return result
 
-    def getAllUser(self):
+    def get_all_user(self):
         """
         ---- Returns a list of all the users from the DB.
         """
@@ -78,7 +100,7 @@ class catalog_interface:
         print result
         return result
 
-    def updateUserLogin(self, existinguser):
+    def update_user_login(self, existinguser):
         """
         ---- updates the user login time.
         """
@@ -86,7 +108,7 @@ class catalog_interface:
         self.dsession.add(existinguser)
         self.dsession.commit()
 
-    def addUser(self, newUser):
+    def add_user(self, newUser):
         """
         Adds a new user record in the database"""
         try:
@@ -98,16 +120,16 @@ class catalog_interface:
             self.dsession.add(newUser)
             self.dsession.commit()
         else:
-            self.updateUserLogin(existinguser)
+            self.update_user_login(existinguser)
 
-    def getUserById(self, userId):
+    def get_user_by_id(self, userId):
         """
         returns a user record by id
         """
         return self.dsession.query(User).filter(
             User.id == userId).one()
 
-    def updateUserDetails(self, user):
+    def update_user_details(self, user):
         """
         updates a user record
         """
@@ -129,7 +151,7 @@ class catalog_interface:
 
         return result
 
-    def adminlogin(self, adminuser):
+    def admin_login(self, adminuser):
         """
         return a user bases on the username and password
         """

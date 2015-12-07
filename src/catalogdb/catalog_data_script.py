@@ -126,7 +126,7 @@ session.add(tvItem)
 lptItem = Items(name="ASUS Chromebook 13-Inch HD with Gigabit WiFi, 16GB Storage & 4GB RAM (Black)",
                 description="10 Hours Incredible Battery Life. Gigabit Dual-Band 802.11AC ultra-fast Wi-Fi.Can open/edit MS Office files using free embedded QuickOffice editor or Google Docs, and can download Microsoft Office Online (an online version of Microsoft Office) for free. Cannot install standard MS Office software.",
                 pricerange="$189 - $200",
-                pictureurl="http://www.reinisfischer.com/sites/default/files/12_1.jpg",
+                pictureurl="http://ecx.images-amazon.com/images/I/81CwszuAf2L._SX522_.jpg",
                 category_id=12, user_id=1)
 session.add(lptItem)
 

@@ -1,11 +1,21 @@
 {% from "form_helper.html" import render_field %}
-<form method='post' action="{{url_for('new_category')}}">
+<form method='post' action="{{url_for('new_item')}}">
 	
 	{{ render_field(form.name) }}
-	{{ render_field(form.parent) }}
+	{{ render_field(form.description) }} 
+	{{ render_field(form.pricerange) }} 
+	{{ render_field(form.pictureurl) }} 
 	{{ render_field(form.isActive) }}
-	{{ render_field(form.hasChildren) }}
+	{{ render_field(form.category_id) }}
 	{{ render_field(form.id) }}
+
+<div class="row">
+		<div class="col-xs-3 form-label"> <label>Item Picture</label> </div>
+		<div class="col-xs-9">
+			<img src="{{form['pictureurl'].data}}" class="item-pic-large">
+		</div>
+	</div>
+	
 	<div class="row">
 		<div class="col-xs-5"></div>
 		<div class="col-xs-1">
