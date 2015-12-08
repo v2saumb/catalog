@@ -1,0 +1,13 @@
+{% from "category_helper.html" import render_categories %}
+{% from "item_helper.html" import render_item %}
+<div class="row">
+	<div class="col-xs-3 heading"><h4>Categories</h4></div>
+	<div class="col-xs-9 heading"> <h4>Latest Items</h4></div>
+</div>
+<div class="row">
+	<div class="col-xs-3 ">{{render_categories(parent_categories,sub_categories)}}</div>
+	<div class="col-xs-9 ">
+		{{render_item(latest_items)}}
+		
+	</div>
+</div>

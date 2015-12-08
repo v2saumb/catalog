@@ -2,12 +2,10 @@
 {% if field.type == "HiddenField" %}
   {{ field(**kwargs)|safe }}
 {% else %}
-
 <div class="row">
   <div class="col-xs-3 form-label">{{ field.label }}</div>
-  <div class="col-xs-4">{{ field(**kwargs)|safe }}</div>
-  <div class="col-xs-5">
-  {% if field.errors %}
+  <div class="col-xs-4">{{ field(**kwargs)|safe }}
+    {% if field.errors %}
     <ul class="form-error">
     {% for error in field.errors %}
       <li>{{ error }}</li>
@@ -15,6 +13,8 @@
     </ul>
   {% endif %}
   </div>
+  <div class="col-xs-5">
+   </div>
 </div>
 {% endif %}
 {% endmacro %}

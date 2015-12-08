@@ -170,3 +170,12 @@ img.item-pic-small {
 img.item-pic-large{
     width:25%;
 }
+.align-center{
+    text-align: center;
+}
+.text-success{
+    font-size: 25px;
+}
+.text-danger{
+    font-size: 25px;
+}

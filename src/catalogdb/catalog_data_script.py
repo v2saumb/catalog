@@ -54,8 +54,8 @@ session.commit()
 
 print "Inserting sub-categories"
 # 4
-scocer = Categories(name="Soccer", hasChildren=False, parent=1)
-session.add(ec)
+soccer = Categories(name="Soccer", hasChildren=False, parent=1)
+session.add(soccer)
 # 5
 basketball = Categories(name="Basketball", hasChildren=False, parent=1)
 session.add(basketball)

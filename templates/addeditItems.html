@@ -1,5 +1,5 @@
 {% from "form_helper.html" import render_field %}
-<form method='post' action="{{url_for('new_item')}}">
+<form method='post' action="{{url_for('new_item')}}" name="add_edit_item">
 	
 	{{ render_field(form.name) }}
 	{{ render_field(form.description) }} 
@@ -12,7 +12,7 @@
 <div class="row">
 		<div class="col-xs-3 form-label"> <label>Item Picture</label> </div>
 		<div class="col-xs-9">
-			<img src="{{form['pictureurl'].data}}" class="item-pic-large">
+			<img id="uploadedimage" src="{% if form['pictureurl'].data %}{{form['pictureurl'].data}} {% else %} {{url_for('static', filename='images/img-not-found.png')}} {%endif%}" class="item-pic-large"/>
 		</div>
 	</div>
 	
