@@ -1,16 +1,17 @@
 {% macro render_categories(parent_categories,sub_categories) %}
 {% for parent in parent_categories %}
-{% if parent.id >0 %}
-<div class="row">
-  <div class="col-xs-12 bold"><i class="fa fa-minus"></i> {{parent.name}}</div>
-</div>
-{% for subcat in sub_categories %}
-{% if subcat.parent == parent.id %}
-<div class="row">
-  <div class="col-xs-12 left-nav" id="subcat_{{subcat.id}}">{{subcat.name}}</div>
-</div>
-{%endif%}
-{% endfor %}
-{%endif%}
-{% endfor %}
+	{% if parent.id >0 %}
+		<div class="row">
+			<div class="col-xs-12 bold"> <div class="left-nav-trigger" id="{{parent.id}}"><span class="nav-parent-icon"><i class="fa fa-minus"></i></span> {{parent.name}}</div>
+			<ul class="left-nav-ul" id="cat_{{parent.id}}">
+				{% for subcat in sub_categories %}
+					{% if subcat.parent == parent.id %}
+						<li class="left-nav-item" id="subcat_{{subcat.id}}">{{subcat.name}}</li>
+						{%endif%}
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		{%endif%}
+	{% endfor %}
 {% endmacro %}

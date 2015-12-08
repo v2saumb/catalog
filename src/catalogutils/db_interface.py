@@ -75,16 +75,18 @@ class catalog_interface:
     def get_latest_items(self, time_delta, item_limit):
         """
         returns latest items if not found it will return the
-        latest from all the records
+        latest from all the records. This returns only active Items
         """
         today = datetime.date.today()
         cut_off_date = today - datetime.timedelta(days=time_delta)
         try:
             results = self.dsession.query(Items).filter(
-                Items.created > cut_off_date).limit(item_limit).all()
+                Items.created > cut_off_date,
+                Items.isActive == true()).limit(item_limit).all()
         except:
             results = self.dsession.query(Items).order_by(
-                Items.created.desc()).limit(item_limit).all()
+                Items.created.desc(),
+                Items.isActive == true()).limit(item_limit).all()
         return results
 
     def get_categories_by_id(self, category_id):

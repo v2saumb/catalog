@@ -25,8 +25,11 @@
     </div>
     <div class="col-xs-3">{{item.description }}</div>
     <div class='col-xs-1 align-center'>{% if item.isActive%}<i class="fa fa-check text-success"></i>{%else%}<i class="fa fa-ban text-danger"></i>{%endif%}</div>
-    <div class='col-xs-2'><span class="bold">Created: </span>{{item.created}} </br>
-        <span class="bold">Last updated: </span>{{item.lastupdated}} 
+    <div class='col-xs-2'><span class="bold">Created: </span>{{item.created.strftime("%b %d, %Y %H:%M")}}
+    {% if item.lastupdated%}
+    </br>
+        <span class="bold">Last updated: </span> {{item.lastupdated.strftime("%b %d, %Y %H:%M")}} 
+    {%endif%}
     </div>
     {% if not isSomeoneLoggedIn() or not verifyOwnerLogin(item.user_id) %}
         <div class='col-xs-1 v-middle'>

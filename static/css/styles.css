@@ -57,18 +57,18 @@ i.large-icon {
     background-color: #eee
 }
 
-input[type='text'],
-textarea {
+input[type='text'], textarea {
     width: 500px;
 }
 
-textarea{
-    height:100px;
+textarea {
+    height: 100px;
 }
 
-textarea[id='pictureurl']{
-    height:80px;
-} 
+textarea[id='pictureurl'] {
+    height: 80px;
+}
+
 .message {
     font-size: larger;
     color: red;
@@ -163,19 +163,64 @@ ul.form-error li {
 }
 
 img.item-pic-small {
-    width:150px;
-    height:auto;
+    width: 150px;
+    height: auto;
     margin-top: 5px
 }
-img.item-pic-large{
-    width:25%;
+
+img.item-pic-large {
+    width: 25%;
 }
-.align-center{
+
+.align-center {
     text-align: center;
 }
-.text-success{
+
+.text-success {
     font-size: 25px;
 }
-.text-danger{
+
+.text-danger {
     font-size: 25px;
+}
+
+.item-details {
+    position: absolute;
+    top: 0px;
+    left: 150px;
+}
+
+.catalog-item {
+    min-height: 200px;
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+.catalog-item:hover {
+    background-color: #fff;
+    box-shadow: 2px 2px 5px 1px #666;
+}
+
+ul.left-nav-ul li.left-nav-item {
+    padding: 10px 10px;
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+ul.left-nav-ul li.left-nav-item:hover {
+    background-color: #fff;
+    box-shadow: 2px 2px 5px 1px #666;
+}
+
+ul.left-nav-ul {
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
+    opacity: 1;
+    height: auto;
+}
+
+ul.left-nav-ul.hide-element{
+    height:0px;
+    opacity:0;
+    display:none;
 }
