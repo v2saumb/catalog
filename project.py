@@ -22,6 +22,7 @@ from src.catalogutils.catalogforms import CategoriesForm, ItemForm
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from oauth2client.client import AccessTokenCredentials
+
 DATABASE_FILEPATH = curdir + sep + 'src/catalogdb/catalogdatabase.db'
 GOOGLE_FILE = curdir + sep + 'src/json/client_secrets.json'
 
@@ -124,7 +125,7 @@ def get_user_list(page):
     return resultsTemplate
 
 
-def get_catalog(page):
+def get_catalog():
     """
      creates a catalog template for display
     """
@@ -135,6 +136,42 @@ def get_catalog(page):
                            parent_categories=parent_categories,
                            sub_categories=sub_categories,
                            latest_items=latest_items)
+
+
+def get_cataegory_listings(db_category_name):
+    """
+     creates a catalog template for display
+    """
+
+    parent_categories = catalogDb.get_all_parent_categories()
+    sub_categories = catalogDb.get_all_sub_categories()
+    latest_items = enumerate(catalogDb.get_items_by_category(db_category_name))
+    if not latest_items:
+        flash("Could not find anything for ")
+    return render_template("items_catalog.html",
+                           parent_categories=parent_categories,
+                           sub_categories=sub_categories,
+                           latest_items=latest_items)
+
+
+def get_cataegory_item(db_category_name, db_item_name):
+    """
+    renders the template for an Item in a category
+    """
+    parent_categories = catalogDb.get_all_parent_categories()
+    sub_categories = catalogDb.get_all_sub_categories()
+    category_item = catalogDb.get_category_item_by_name(db_category_name,
+                                                        db_item_name)
+    print category_item
+    if not category_item:
+        result = render_template('error.html',
+                                 message="Oops! We could not serve what you were looking for...")
+    else:
+        result = render_template("category_item_view.html",
+                                 parent_categories=parent_categories,
+                                 sub_categories=sub_categories,
+                                 category_item=category_item)
+    return result
 
 
 def process_admin_login(adminuser):
@@ -196,8 +233,8 @@ def verify_owner_login(item_user):
 
 
 def other_page_urls(page):
-    """ 
-    creates the page url for pagination 
+    """
+    creates the page url for pagination
     """
     args = request.view_args.copy()
     args['page'] = page
@@ -213,17 +250,36 @@ def get_category_name(category_id):
     try:
         result = login_session['categorylist'][category_id]
     except:
-        print "cat list empty"
+        app.logger.debug("cat list empty category_id" + str(category_id))
         login_session['categorylist'] = update_category_list()
         result = login_session['categorylist'][category_id]
 
     return result
+
+
+def format_name_for_url(conversion_string):
+    """
+    strips the spaces and replaces them with
+    - for passing these in the URL
+    """
+    return conversion_string.replace(" ", '~')
+
+
+def unformat_name_for_url(conversion_string):
+    """
+    strips the - and replaces them with
+    spaces
+    """
+    return conversion_string.replace("~", ' ')
+
+
 # adding required functions to the template system
 app.jinja_env.globals['other_page_urls'] = other_page_urls
 app.jinja_env.globals['isSomeoneLoggedIn'] = is_someone_Loggedin
 app.jinja_env.globals['isAdminLoggedIn'] = is_admin_loggedin
 app.jinja_env.globals['verifyOwnerLogin'] = verify_owner_login
 app.jinja_env.globals['get_category_name'] = get_category_name
+app.jinja_env.globals['format_name_for_url'] = format_name_for_url
 
 
 def set_page_title(page_name):
@@ -234,14 +290,38 @@ def set_page_title(page_name):
     login_session['page_title'] = page_name
 
 
-@app.route('/', defaults={'page': 1})
-@app.route('/catalog', defaults={'page': 1})
-@app.route('/catalog/<int:page>')
-def catalog(page):
+@app.route('/', )
+@app.route('/catalog')
+def catalog():
     set_page_title("Catalog")
     output = ''
     output = render_template('header.html', SESSION=login_session)
-    output += get_catalog(page)
+    output += get_catalog()
+    output += render_template('footer.html')
+    return output
+
+
+@app.route('/catalog/<category_name>/items')
+def category_listings(category_name):
+    set_page_title("Category Items")
+    db_category_name = unformat_name_for_url(category_name)
+    app.logger.debug("Listing items for " + db_category_name)
+    output = ''
+    output = render_template('header.html', SESSION=login_session)
+    output += get_cataegory_listings(db_category_name)
+    output += render_template('footer.html')
+    return output
+
+
+@app.route('/catalog/<category_name>/<item_name>')
+def category_item(category_name, item_name):
+    set_page_title("Items Details")
+    db_category_name = unformat_name_for_url(category_name)
+    db_item_name = unformat_name_for_url(item_name)
+    app.logger.debug("Listing items for " + db_category_name)
+    output = ''
+    output = render_template('header.html', SESSION=login_session)
+    output += get_cataegory_item(db_category_name, db_item_name)
     output += render_template('footer.html')
     return output
 
@@ -395,6 +475,7 @@ def new_item(item_id):
             else:
                 print "add item is " + newItem.id
                 newItem.id = None
+                newItem.user_id = login_session['userid']
                 catalogDb.add_item(newItem)
             return redirect(url_for('items'))
 

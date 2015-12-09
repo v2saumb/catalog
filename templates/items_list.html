@@ -17,7 +17,7 @@
 </div>
 <hr />
 {%for item in items %}
-<div class="row ">
+<div class="row {%if not item.isActive %} disabled {%endif%}">
     <div class='col-xs-1'><img src="{% if item.pictureurl %}{{item.pictureurl}} {% else %} {{url_for('static', filename='images/img-not-found.png')}} {%endif%}" class="item-pic-small" /></div>
     <div class='col-xs-2'>{{item.name}}</br>
         <span class="bold">Price Range: </span>{{item.pricerange}}</br>

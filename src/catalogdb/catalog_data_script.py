@@ -38,15 +38,15 @@ parent = Categories(id=0, name="Parent Category", hasChildren=True)
 session.add(parent)
 
 # 1
-sports = Categories(name="Sports & Outdoors", hasChildren=True, parent=0)
+sports = Categories(name="Sports and Outdoors", hasChildren=True, parent=0)
 session.add(sports)
 
 # 2
-hgt = Categories(name="Home, Garden & Tools", hasChildren=True, parent=0)
+hgt = Categories(name="Home, Garden and Tools", hasChildren=True, parent=0)
 session.add(hgt)
 
 # 3
-ec = Categories(name="Electronics & Computers", hasChildren=True, parent=0)
+ec = Categories(name="Electronics and Computers", hasChildren=True, parent=0)
 session.add(ec)
 session.commit()
 
@@ -70,7 +70,7 @@ skating = Categories(name="Skating", hasChildren=False, parent=1)
 session.add(skating)
 
 # 9
-knd = Categories(name="Kitchen & Dining", hasChildren=False, parent=2)
+knd = Categories(name="Kitchen and Dining", hasChildren=False, parent=2)
 session.add(knd)
 # 10
 Appliances = Categories(name="Appliances", hasChildren=False, parent=2)
@@ -81,11 +81,11 @@ ha = Categories(name="Home Automation", hasChildren=False, parent=2)
 session.add(ha)
 
 # 12
-lpt = Categories(name="Laptops & Tablets", hasChildren=False, parent=3)
+lpt = Categories(name="Laptops and Tablets", hasChildren=False, parent=3)
 session.add(lpt)
 
 # 13
-tv = Categories(name="TV & Video", hasChildren=False, parent=3)
+tv = Categories(name="TV and Video", hasChildren=False, parent=3)
 session.add(tv)
 
 # 14
@@ -123,7 +123,7 @@ tvItem = Items(name="TCL 48FS3700 48-Inch 1080p Roku Smart LED TV (2015 Model)",
 session.add(tvItem)
 
 
-lptItem = Items(name="ASUS Chromebook 13-Inch HD with Gigabit WiFi, 16GB Storage & 4GB RAM (Black)",
+lptItem = Items(name="ASUS Chromebook 13-Inch HD with Gigabit WiFi, 16GB Storage and 4GB RAM (Black)",
                 description="10 Hours Incredible Battery Life. Gigabit Dual-Band 802.11AC ultra-fast Wi-Fi.Can open/edit MS Office files using free embedded QuickOffice editor or Google Docs, and can download Microsoft Office Online (an online version of Microsoft Office) for free. Cannot install standard MS Office software.",
                 pricerange="$189 - $200",
                 pictureurl="http://ecx.images-amazon.com/images/I/81CwszuAf2L._SX522_.jpg",
@@ -154,8 +154,8 @@ kndItem = Items(name="Victorinox Swiss Army 8-Inch Fibrox Straight Edge Chef's K
 session.add(kndItem)
 
 
-skatingItem = Items(name="A&R Sports Deluxe Skate Bag",
-                    description="Two Large Compartments for Ice Skates or Roller Blades. Additional Compartment to Store Accessories. Adjustable Shoulder Strap. From A&R Sports, the leading brand in sports accessories for over 20 years",
+skatingItem = Items(name="AandR Sports Deluxe Skate Bag",
+                    description="Two Large Compartments for Ice Skates or Roller Blades. Additional Compartment to Store Accessories. Adjustable Shoulder Strap. From AandR Sports, the leading brand in sports accessories for over 20 years",
                     pricerange="$26 - $28",
                     pictureurl="http://ecx.images-amazon.com/images/I/71Eb90TnV2L._SL1000_.jpg",
                     category_id=8, user_id=1)
@@ -170,7 +170,7 @@ snowboardingItem = Items(name="Lucky Bums Plastic Snowboard",
 session.add(snowboardingItem)
 
 
-baseballItem = Items(name="Rawlings Baseball Official League 9 In. Solid Cork & Rubber Center 5 Oz",
+baseballItem = Items(name="Rawlings Baseball Official League 9 In. Solid Cork and Rubber Center 5 Oz",
                      description="Official size 9. *Weight 5 oz. *Synthetic cover.*Solid cork & rubber center.*Major league seam",
                      pricerange="$6 - $7",
                      pictureurl="http://ecx.images-amazon.com/images/I/51VGMBD3NYL._SY355_.jpg",

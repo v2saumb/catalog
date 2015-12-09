@@ -19,7 +19,7 @@
 </div>
 <hr />
 {%for category in categories %}
-<div class="row">
+<div class="row {%if not category.isActive %} disabled {%endif%}">
 <div class='col-xs-1'>{{category.id}}</div>
 <div class='col-xs-2 {% if category.hasChildren %} bold  {%endif%}'>{{category.name}}</div>
 <div class="col-xs-1">{{category.parent}}</div>

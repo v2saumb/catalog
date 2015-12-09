@@ -3,15 +3,19 @@
   {% if idx ==0 or idx== 3 or idx == 6%}
     <div class="row">
     {% endif %}
-    <div class="col-xs-4 catalog-item"><div>
-    <img src="{% if item.pictureurl %}{{item.pictureurl}} {% else %} {{url_for('static', filename='images/img-not-found.png')}} {%endif%}" class="item-pic-small" /></div>
-    <ul class="item-details">
+    <div class="catalog-item" data-items-url="{{url_for('category_item',
+     category_name=format_name_for_url(get_category_name(item.category_id)) ,
+     item_name=format_name_for_url(item.name) )}}">
+    <div class="catalog-item-image"><img src="{% if item.pictureurl %}{{item.pictureurl}} {% else %} {{url_for('static', filename='images/img-not-found.png')}} {%endif%}" class="item-pic-catalog" />
+    </div>
+    <ul class="catalog-item-details">
       <li>{{item.name}}</li>
       <li class="bold">{{get_category_name(item.category_id)}}</li>
-      <li>{{item.pricerange}}</li>
-    </ul> </div>
-    {% if idx ==2 or idx== 5 or idx == 9%}
-    </div >
-  {% endif %}
+      <li class="bold">{{item.pricerange}}</li>
+    </ul>
+  </div>
+  {% if idx ==2 or idx== 5 or idx == 9%}
+  </div >
+{% endif %}
 {% endfor %}
 {% endmacro %}

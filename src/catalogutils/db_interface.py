@@ -72,6 +72,41 @@ class catalog_interface:
         return self.dsession.query(Items).filter(
             Items.id == item_id).one()
 
+    def get_items_by_category(self, db_category_name):
+        """
+        returns a items record by category
+        """
+        print db_category_name
+        try:
+            temp_category = self.dsession.query(Categories).filter(
+                Categories.name == db_category_name,
+                Categories.isActive == true()).one()
+
+            results = self.dsession.query(Items).filter(
+                Items.category_id == temp_category.id,
+                Items.isActive == true()).all()
+        except:
+            results = None
+        return results
+
+    def get_category_item_by_name(self, db_category_name, db_item_name):
+        """
+        returns a items record by category and item name
+        """
+        print db_category_name
+        try:
+            temp_category = self.dsession.query(Categories).filter(
+                Categories.name == db_category_name,
+                Categories.isActive == true()).one()
+
+            results = self.dsession.query(Items).filter(
+                Items.category_id == temp_category.id,
+                Items.isActive == true(),
+                Items.name == db_item_name).one()
+        except:
+            results = None
+        return results
+
     def get_latest_items(self, time_delta, item_limit):
         """
         returns latest items if not found it will return the

@@ -1,17 +1,18 @@
 {% macro render_categories(parent_categories,sub_categories) %}
 {% for parent in parent_categories %}
 	{% if parent.id >0 %}
-		<div class="row">
-			<div class="col-xs-12 bold"> <div class="left-nav-trigger" id="{{parent.id}}"><span class="nav-parent-icon"><i class="fa fa-minus"></i></span> {{parent.name}}</div>
+		<div class="category-list">
+			<div class="left-nav-trigger bold" id="{{parent.id}}"><span class="nav-parent-icon"><i class="fa fa-minus"></i></span> {{parent.name}}</div>
 			<ul class="left-nav-ul" id="cat_{{parent.id}}">
 				{% for subcat in sub_categories %}
 					{% if subcat.parent == parent.id %}
-						<li class="left-nav-item" id="subcat_{{subcat.id}}">{{subcat.name}}</li>
+						<li class="left-nav-item" id="subcat_{{subcat.id}}" data-items-url="{{url_for('category_listings', category_name=format_name_for_url(subcat.name)) }}" >
+						{{subcat.name}}</li>
 						{%endif%}
 					{% endfor %}
 				</ul>
+				
 			</div>
-		</div>
-		{%endif%}
-	{% endfor %}
-{% endmacro %}
+			{%endif%}
+		{% endfor %}
+	{% endmacro %}

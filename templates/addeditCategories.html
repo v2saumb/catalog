@@ -1,5 +1,5 @@
 {% from "form_helper.html" import render_field %}
-<form method='post' action="{{url_for('new_category')}}">
+<form method='post' action="{{url_for('new_category')}}" name="category_form">
 	
 	{{ render_field(form.name) }}
 	{{ render_field(form.parent) }}
