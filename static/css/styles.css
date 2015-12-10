@@ -1,48 +1,276 @@
-ul {
-    list-style: none;
-    display: inline;
-}
-
-hr {
-    background-color: #2e6da4;
-    height: 1px;
-    border: 0
-}
-
 i.large-icon {
     font-size: 20px;
 }
 
-.navbar-default {
+
+/* CUSTOMIZE THE NAVBAR
+-------------------------------------------------- */
+
+
+/* Special class on .container surrounding .navbar, used for positioning it into place. */
+
+.navbar-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 20;
+}
+
+
+/* Flip around the padding for proper display in narrow viewports */
+
+.navbar-wrapper > .container {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.navbar-wrapper .navbar {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+
+/* .navbar-wrapper .navbar .container {
+  width: auto;
+}
+ */
+
+.navbar-inverse {
     background-color: #337ab7;
     color: #ffffff;
     font-size: larger;
 }
 
-.navbar-default .navbar-brand {
+.navbar-inverse .navbar-brand, .navbar-inverse .navbar-nav>.active>a {
     color: #ffffff;
 }
 
-.navbar-default .navbar-nav>li>a {
+.navbar-inverse .navbar-nav>li>a {
     color: #EEE;
     -webkit-transition: all .4s ease;
     transition: all .4s ease;
 }
 
-.navbar-default .navbar-nav>li {
+.navbar-inverse .navbar-nav>li {
     -webkit-transition: all .4s ease;
     transition: all .4s ease;
 }
 
-.navbar-default .navbar-nav>li:hover {
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>li:hover {
     background-color: #1E64A1;
 }
 
-.navbar-default .navbar-nav>li:hover>a {
+.navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>li:hover>a, .navbar-inverse .navbar-nav>li:focus>a {
     color: #F5E00C;
+    background-color: #1E64A1;
 }
 
-.header-el {
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+
+
+/* Carousel base class */
+
+.carousel {
+    height: 500px;
+    margin-bottom: 60px;
+}
+
+
+/* Since positioning the image, we need to help out the caption */
+
+.carousel-caption {
+    z-index: 10;
+}
+
+
+/* Declare heights because of positioning of img element */
+
+.carousel .item {
+    height: 500px;
+    background-color: #777;
+}
+
+.carousel-inner > .item > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    height: 500px;
+}
+
+.carousel-inner > .item > .container > .carousel-caption > img.carousel-item-image {
+    width: 250px;
+    height: 250px;
+}
+
+.container.items-container, .container.cat-container,
+.container.users-container, .container.alert-container{
+    padding-top: 60px;
+}
+.container.view-item
+{
+    padding-top: 80px;
+}
+.container.login-container,
+.container.login-form-container,
+.container.item-form
+{
+    padding-top: 100px;
+    padding-bottom: 50px;
+    height:100%;
+}
+
+.container.alert-container{
+    z-index: 100;
+}
+.catalog-item {
+    min-height: 300px;
+    padding: 10px;
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+.catalog-item .item-name {
+    max-width: 90%;
+    max-height: 40px;
+    overflow: hidden;
+}
+
+.catalog-item:hover {
+    background-color: #eee;
+    box-shadow: 2px 2px 5px 1px #666;
+}
+
+
+/* categories navigation menu  */
+
+ul {
+    list-style: none;
+}
+
+ul.left-nav-ul li.left-nav-item {
+    padding: 10px 10px;
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+ul.left-nav-ul li.left-nav-item:hover {
+    background-color: #eee;
+    box-shadow: 2px 2px 5px 1px #666;
+}
+
+ul.left-nav-ul {
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
+    opacity: 1;
+    height: auto;
+}
+
+ul.left-nav-ul.hide-element {
+    height: 0px;
+    opacity: 0;
+    display: none;
+}
+
+.cat-container .row.cat-row,
+.items-container .row.item-row,
+.container.item-form .row,
+.container.users-container .row.user-row {
+    z-index: auto;
+    padding: 10px;
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+.cat-container .row.cat-row:hover, 
+.items-container .row.item-row:hover
+.users-container .row.user-row:hover{
+    z-index: 100;
+    /* background-color: #eee; */
+    box-shadow: 2px 2px 5px 1px #666;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.align-left {
+    text-align: left;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.v-middle {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.pagination .btn {
+    padding: 2px 5px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+ul.form-error {
+    padding: 0;
+}
+
+ul.form-error li {
+    color: red;
+}
+
+.page-error {
+    color: red;
+}
+
+.form-label {
+    text-align: right;
+}
+
+.form-label label {
+    text-align: right;
+}
+.row.disabled {
+    background: repeating-linear-gradient( -45deg, #fff, #eee 10px, #ddd 5px, #bbb 5px);
+}
+
+.item-price {
+    color: #C52F35;
+}
+textarea {
+    height: 100px;
+    width:100%;
+}
+
+textarea[id='pictureurl'] {
+    height: 80px;
+}
+input[type='text'], textarea {
+    width: 100%;
+}
+img.item-pic-large {
+    width: 25%;
+}
+
+.list-item-desc{
+    width:100%;
+    max-height:225px;
+    overflow: auto;
+}
+/* .header-el {
     text-align: center;
     font-weight: bold;
     padding-bottom: 5px;
@@ -57,17 +285,9 @@ i.large-icon {
     background-color: #eee
 }
 
-input[type='text'], textarea {
-    width: 500px;
-}
 
-textarea {
-    height: 100px;
-}
 
-textarea[id='pictureurl'] {
-    height: 80px;
-}
+
 
 .message {
     font-size: larger;
@@ -112,34 +332,14 @@ li.user-image {
     text-align: center;
 }
 
-.pagination .btn {
-    padding: 2px 5px;
-}
+
 
 .puppy-image {
     width: 85px;
     height: 80px;
 }
 
-ul.form-error {
-    padding: 0;
-}
 
-ul.form-error li {
-    color: red;
-}
-
-.page-error {
-    color: red;
-}
-
-.form-label {
-    text-align: right;
-}
-
-.form-label label {
-    text-align: right;
-}
 
 .adminuser {
     width: 40px;
@@ -174,17 +374,6 @@ img.item-pic-large {
 
 
 
-.align-center {
-    text-align: center;
-}
-
-.align-left {
-    text-align: left;
-}
-
-.align-right {
-    text-align: right;
-}
 .text-success {
     font-size: 25px;
 }
@@ -193,39 +382,14 @@ img.item-pic-large {
     font-size: 25px;
 }
 
-ul.left-nav-ul li.left-nav-item {
-    padding: 10px 10px;
-    -webkit-transition: all .4s ease;
-    transition: all .4s ease;
-}
 
-ul.left-nav-ul li.left-nav-item:hover {
-    background-color: #eee;
-    box-shadow: 2px 2px 5px 1px #666;
-}
 
-ul.left-nav-ul {
-    -webkit-transition: all .4s ease;
-    transition: all .4s ease;
-    opacity: 1;
-    height: auto;
-}
-
-ul.left-nav-ul.hide-element {
-    height: 0px;
-    opacity: 0;
-    display: none;
-}
-
-.row.disabled {
-    background: repeating-linear-gradient( -45deg, #fff, #eee 10px, #ddd 5px, #bbb 5px);
-}
 
 .items-column {
     display: block;
     float: left;
     width: 84%;
-    margin-right:5px;
+    margin-right: 5px;
 }
 
 .categories-column {
@@ -244,8 +408,8 @@ ul.left-nav-ul.hide-element {
     border: 1px solid #ddd;
     -webkit-transition: all .4s ease;
     transition: all .4s ease;
-
 }
+
 .catalog-item:hover {
     background-color: #eee;
     box-shadow: 2px 2px 5px 1px #666;
@@ -258,11 +422,13 @@ ul.catalog-item-details {
     top: 0px;
     left: 150px;
 }
-.catalog-item-image{
-    width:25%;
+
+.catalog-item-image {
+    width: 25%;
     display: block;
-    float:left;
+    float: left;
 }
+
 .catalog-item-image img {
     width: 125px;
     height: 125px;
@@ -270,42 +436,38 @@ ul.catalog-item-details {
     margin-top: 5px
 }
 
-.category-item-image{
-    width:30%;
+.category-item-image {
+    width: 30%;
     display: block;
-    float:left;
+    float: left;
 }
-.category-item-image img{
+
+.category-item-image img {
     max-width: 350px;
     margin-left: 10px;
 }
-.category-item-details{
- width:60%;
+
+.category-item-details {
+    width: 60%;
     display: block;
 }
-.category-item-desc{
+
+.category-item-desc {
     margin-top: 10px;
     padding: 5px;
     width: 90%;
     display: block;
-    
 }
-.category-item-actions{
-      margin-top: 10px;
+
+.category-item-actions {
+    margin-top: 10px;
     padding: 15px;
     width: 100%;
     display: block;
 }
-.item-price{
-    color:#C52F35;
-}
-.width-half{
-    display: block;
-    width: 50%;
-    float: left;
-}
-.width-quarter{
-    display: block;
-    width: 25%;
-    float: left;
-}
+
+
+
+
+
+ */

@@ -28,7 +28,9 @@
         $("form[name='category_form']").find("#name").bind("keydown", inputValidator);
     }
 
-
+    $("#alert-message").fadeTo(2000, 500).slideUp(500, function(){
+    $("#alert-message").alert('close');
+    });
 
     function nav_item_click(event) {
         window.location.href = $(this).attr('data-items-url');
@@ -58,7 +60,7 @@
         $("#" + targetElm).toggleClass("hide-element");
     }
 
-
+    
 
 
 })(jQuery);

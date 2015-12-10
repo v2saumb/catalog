@@ -1,6 +1,7 @@
+<div class="container items-container">
 <div class="row">
-    <div class='col-xs-6 heading'><h1> All Items </h1></div>
-    <div class="col-xs-6 v-middle">
+    <div class='col-md-6 heading'><h3> All Items </h3></div>
+    <div class="col-md-6 align-right">
         {% if isSomeoneLoggedIn()  %}
         <a class='btn btn-primary' href ='{{url_for("new_item")}}' ><i class="fa fa-plus"></i> Add New Item </a>
         {% else %}
@@ -9,46 +10,45 @@
     </div>
 </div>
 <div class="row">
-    <div class='col-xs-3 header-el'> Item </div>
-    <div class="col-xs-3 header-el"> Description </div>
-    <div class='col-xs-1 header-el'> Active </div>
-    <div class='col-xs-2 header-el'> Dates </div>
-    <div class='col-xs-3 header-el'> Action(s) </div>
+    <div class='col-md-3 header-el'> Item </div>
+    <div class="col-md-3 header-el"> Description </div>
+    <div class='col-md-1 header-el'> Active </div>
+    <div class='col-md-2 header-el'> Dates </div>
+    <div class='col-md-3 header-el'> Action(s) </div>
 </div>
 <hr />
 {%for item in items %}
-<div class="row {%if not item.isActive %} disabled {%endif%}">
-    <div class='col-xs-1'><img src="{% if item.pictureurl %}{{item.pictureurl}} {% else %} {{url_for('static', filename='images/img-not-found.png')}} {%endif%}" class="item-pic-small" /></div>
-    <div class='col-xs-2'>{{item.name}}</br>
-        <span class="bold">Price Range: </span>{{item.pricerange}}</br>
-        <span class="bold">Category: </span>{{get_category_name(item.category_id)}}
+<div class="row item-row {%if not item.isActive %} disabled {%endif%}" >
+    <div class='col-md-3'><img src="{% if item.pictureurl %}{{item.pictureurl}} {% else %} {{url_for('static', filename='images/img-not-found.png')}} {%endif%}" class="img-circle" width="140" height="140"/><strong><p>{{item.name}}</p></strong>
+        <p><strong>Price Range: </strong>{{item.pricerange}}</p>
+        <p><strong >Category: </strong>{{get_category_name(item.category_id)}}</p>
     </div>
-    <div class="col-xs-3">{{item.description }}</div>
-    <div class='col-xs-1 align-center'>{% if item.isActive%}<i class="fa fa-check text-success"></i>{%else%}<i class="fa fa-ban text-danger"></i>{%endif%}</div>
-    <div class='col-xs-2'><span class="bold">Created: </span>{{item.created.strftime("%b %d, %Y %H:%M")}}
-    {% if item.lastupdated%}
-    </br>
-        <span class="bold">Last updated: </span> {{item.lastupdated.strftime("%b %d, %Y %H:%M")}} 
+    <div class="col-md-3"><p class="list-item-desc">{{item.description }}</p></div>
+    <div class='col-md-1 align-center'>{% if item.isActive%}<i class="fa fa-check text-success"></i>{%else%}<i class="fa fa-ban text-danger"></i>{%endif%}</div>
+    <div class='col-md-2'><p><strong >Created: </strong>{{item.created.strftime("%b %d, %Y %H:%M")}}
+    {% if item.lastupdated%}</p>
+    <p>        <strong >Last updated: </strong> {{item.lastupdated.strftime("%b %d, %Y %H:%M")}} </p>
     {%endif%}
     </div>
     {% if not isSomeoneLoggedIn() or not verifyOwnerLogin(item.user_id) %}
-        <div class='col-xs-1 v-middle'>
+        <div class='col-md-1 v-middle'>
             <a class='btn btn-primary disabled' href ='' ><i class="fa fa-pencil"></i> Edit</a>
         </div>
-        <div class='col-xs-1 v-middle'>    
+        <div class='col-md-1 v-middle'>    
             <a class='btn btn-danger disabled' href ='' ><i class="fa fa-trash-o"></i> Delete</a>
         </div>
-          <div class='col-xs-1 v-middle'>    
+          <div class='col-md-1 v-middle'>    
         </div>
     {% else %}
-         <div class='col-xs-1 v-middle'>
+         <div class='col-md-1 v-middle'>
             <a class='btn btn-primary ' href ='{{url_for("new_item", item_id=item.id)}}' ><i class="fa fa-pencil"></i> Edit</a>
         </div>
-        <div class='col-xs-1 v-middle'>    
+        <div class='col-md-1 v-middle'>    
             <a class='btn btn-danger ' href ='{{url_for("delete_item")}}' ><i class="fa fa-trash-o"></i> Delete</a>
         </div>
-          <div class='col-xs-1 v-middle'>    
+          <div class='col-md-1 v-middle'>    
         </div>
     {% endif %}
 </div>
 {% endfor %}
+</div>

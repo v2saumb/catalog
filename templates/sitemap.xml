@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog>
+	{% for parentcat in parent_categories %}
+	{% if parentcat.id >0 %}
+	<parent-category>
+		<id>{{parentcat.id}}</id>
+		<name>{{parentcat.name}}</name>
+		<sub-categories>
+		{% for subcat in sub_categories %}
+		{% if parentcat.id == subcat.parent >0 %}
+		<category>
+			<id>{{subcat.id}}</id>
+		   <name>{{subcat.name}}</name>
+		   <url>{{url_for('category_listings', category_name=format_name_for_url(subcat.name)) }}</url>
+		   <items>
+		   	{% for item in items %}
+			{% if item.category_id == subcat.id >0 %}
+				<id>{{item.id}}</id>
+		   		<name>{{item.name}}</name>
+		   		<pricerange>{{item.pricerange}}</pricerange>
+		   		<description>{{item.description}}</description>
+		   		<active>{{item.isActive}}</active>
+		   		<url>{{url_for('category_item',category_name=format_name_for_url(get_category_name(item.category_id)) ,item_name=format_name_for_url(item.name) )}}
+ </url>
+			{%endif%}
+			{% endfor%}
+		   </items>
+		</category>
+		{%endif%}
+		{% endfor%}
+	</sub-categories>
+	</parent-category>
+	{%endif%}
+	{% endfor%}
+  
+</catalog>

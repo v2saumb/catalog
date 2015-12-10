@@ -40,11 +40,15 @@ class catalog_interface:
             Categories.isActive == true()).order_by(Categories.name).all()
         return result
 
-    def get_all_items(self):
+    def get_all_items(self, only_active=False):
         """
         ---- Returns a list of all the Categories from the DB.
         """
-        return self.dsession.query(Items).order_by(Items.id).all()
+        if only_active:
+            return self.dsession.query(Items).filter(
+                Items.isActive == true()).order_by(Items.name).all()
+        else:
+            return self.dsession.query(Items).order_by(Items.id).all()
 
     def get_all_items_user(self, user_id):
         """
@@ -117,11 +121,12 @@ class catalog_interface:
         try:
             results = self.dsession.query(Items).filter(
                 Items.created > cut_off_date,
-                Items.isActive == true()).limit(item_limit).all()
+                Items.isActive == true()).order_by(
+                Items.created.desc(), Items.name).limit(item_limit).all()
         except:
-            results = self.dsession.query(Items).order_by(
-                Items.created.desc(),
-                Items.isActive == true()).limit(item_limit).all()
+            results = self.dsession.query(Items).filter(
+                Items.isActive == true()).order_by(
+                Items.created.desc(), Items.name).limit(item_limit).all()
         return results
 
     def get_categories_by_id(self, category_id):
@@ -177,7 +182,6 @@ class catalog_interface:
         ---- Returns a list of all the users from the DB.
         """
         result = self.dsession.query(User).order_by(User.id).all()
-        print result
         return result
 
     def update_user_login(self, existinguser):
@@ -248,3 +252,18 @@ class catalog_interface:
         except:
             tempuser = None
         return tempuser
+
+    def get_catalog_all(self):
+        """
+        return a user bases on the username and password
+        """
+        sql = "select i.id as id, i.name as name , i.pricerange as pricerange,"
+        sql += " i.isActive, c.name as category, d.name as parent from"
+        sql += " categories c, items i, categories d"
+        sql += " where c.id=i.category_id and d.id=c.parent "
+        sql += " order by parent , category, name"
+        try:
+            tempitems = self.dsession.execute(sql)
+        except:
+            tempitems = None
+        return tempitems

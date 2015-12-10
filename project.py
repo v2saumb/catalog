@@ -22,6 +22,7 @@ from src.catalogutils.catalogforms import CategoriesForm, ItemForm
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from oauth2client.client import AccessTokenCredentials
+import itertools
 
 DATABASE_FILEPATH = curdir + sep + 'src/catalogdb/catalogdatabase.db'
 GOOGLE_FILE = curdir + sep + 'src/json/client_secrets.json'
@@ -47,13 +48,19 @@ APPLICATION_NAME = "Sams Item Catalog"
 # secret key for the sessions
 APP_SECRET_KEY = 'thisisaseceretkey'
 
+# No of items to display in the crousel
+NO_LATEST_ITEMS = 9
+
+# How may days old is treated as new
+CUT_OFF_DATE = 7
+
 
 def update_category_list():
     """
     caches the list of categories
     """
     result = dict([(int(cat.id), cat.name)
-                   for cat in catalogDb.get_all_sub_categories()])
+                   for cat in catalogDb.get_all_categories()])
     return result
 
 
@@ -131,11 +138,15 @@ def get_catalog():
     """
     parent_categories = catalogDb.get_all_parent_categories()
     sub_categories = catalogDb.get_all_sub_categories()
-    latest_items = enumerate(catalogDb.get_latest_items(7, 9))
+    latest_items = enumerate(catalogDb.get_latest_items(CUT_OFF_DATE,
+                                                        NO_LATEST_ITEMS))
+    all_items = enumerate(catalogDb.get_all_items(True))
     return render_template("items_catalog.html",
                            parent_categories=parent_categories,
                            sub_categories=sub_categories,
-                           latest_items=latest_items)
+                           latest_items=latest_items,
+                           item_count=NO_LATEST_ITEMS,
+                           all_items=all_items)
 
 
 def get_cataegory_listings(db_category_name):
@@ -147,7 +158,7 @@ def get_cataegory_listings(db_category_name):
     sub_categories = catalogDb.get_all_sub_categories()
     latest_items = enumerate(catalogDb.get_items_by_category(db_category_name))
     if not latest_items:
-        flash("Could not find anything for ")
+        flash("Could not find anything for ", category="info")
     return render_template("items_catalog.html",
                            parent_categories=parent_categories,
                            sub_categories=sub_categories,
@@ -172,6 +183,30 @@ def get_cataegory_item(db_category_name, db_item_name):
                                  sub_categories=sub_categories,
                                  category_item=category_item)
     return result
+
+
+def get_cataloged_items():
+    """
+    returns the list of all active items.
+    """
+    items = catalogDb.get_all_items()
+    parent_categories = catalogDb.get_all_parent_categories()
+    sub_categories = catalogDb.get_all_sub_categories()
+    return render_template('sitemap.xml', parent_categories=parent_categories,
+                           sub_categories=sub_categories,
+                           items=items)
+    # category_item = catalogDb.get_category_item_by_name(db_category_name,
+    #                                                     db_item_name)
+    # print category_item
+    # if not category_item:
+    #     result = render_template('error.html',
+    #                              message="Oops! We could not serve what you were looking for...")
+    # else:
+    #     result = render_template("category_item_view.html",
+    #                              parent_categories=parent_categories,
+    #                              sub_categories=sub_categories,
+    #                              category_item=category_item)
+    return True
 
 
 def process_admin_login(adminuser):
@@ -303,6 +338,8 @@ def catalog():
 
 @app.route('/catalog/<category_name>/items')
 def category_listings(category_name):
+    """ renders list of items for the category
+    """
     set_page_title("Category Items")
     db_category_name = unformat_name_for_url(category_name)
     app.logger.debug("Listing items for " + db_category_name)
@@ -315,6 +352,7 @@ def category_listings(category_name):
 
 @app.route('/catalog/<category_name>/<item_name>')
 def category_item(category_name, item_name):
+    """ renders a specific item in the category """
     set_page_title("Items Details")
     db_category_name = unformat_name_for_url(category_name)
     db_item_name = unformat_name_for_url(item_name)
@@ -384,11 +422,11 @@ def edit_user(userid):
         form.populate_obj(newUser)
         if newUser.id is not None:
             if catalogDb.update_user_details(newUser):
-                flash('User Updated Successful!')
+                flash('User Updated Successful!', category="success")
             else:
-                flash('There was an error updating user!')
+                flash('There was an error updating user!', category="danger")
         else:
-            flash("User Not Found!")
+            flash("User Not Found!", category="info")
         return redirect(url_for('users'))
     if userid is not None and userid >= 0:
         app.logger.debug("User Id" + str(userid))
@@ -543,9 +581,10 @@ def login():
     """
 
     # check if already logged in
-    if is_someone_Loggedin() == True:
-        endpointurl = "already_loggedin.html"
-        flash('You are already logged in!')
+    print str(request)
+    if is_someone_Loggedin():
+        flash('You are already logged in!', category="warning")
+        return redirect(url_for('catalog'))
     else:
         endpointurl = "login.html"
 
@@ -553,9 +592,9 @@ def login():
                                   string.digits) for x in xrange(32))
     login_session['state'] = state
     set_page_title("Login")
-    output = render_template('loginheader.html', STATE=state)
+    output = render_template('header.html', STATE=state)
     output += render_template(endpointurl, STATE=state, SESSION=login_session)
-    output += render_template('loginfooter.html', STATE=state)
+    output += render_template('footer.html', STATE=state)
     return output
 
 
@@ -564,9 +603,9 @@ def admin_login():
     """
     serves the admin user login
     """
-    if is_someone_Loggedin() == True:
+    if is_someone_Loggedin():
         endpointurl = "already_loggedin.html"
-        flash('You are already logged in!')
+        flash('You are already logged in!', category="warning")
     else:
         endpointurl = "admin_login.html"
 
@@ -576,11 +615,11 @@ def admin_login():
         form.populate_obj(admnuser)
         chkUser = catalogDb.admin_login(admnuser)
         if chkUser is not None:
-            flash("Login Successful!")
+            flash("Login Successful!", category="success")
             process_admin_login(chkUser)
             return redirect(url_for('catalog'))
         else:
-            flash("Incorrect email and password combination!")
+            flash("Incorrect email and password combination!", category="error")
             return redirect(url_for('admin_login'))
 
     output = render_template('header.html', SESSION=login_session)
@@ -682,7 +721,8 @@ def gconnect():
     output += '<img src="'
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("You are now logged in as %s" % login_session['username'])
+    flash("You are now logged in as %s" %
+          login_session['username'], category="success")
     print "done!"
     return output
 
@@ -696,7 +736,7 @@ def admin_logout():
     login_session['email'] = None
     login_session['accountType'] = None
     login_session['userid'] = None
-    flash("Logged out successfully !")
+    flash("Logged out successfully !", category="info")
     return redirect(url_for("catalog"))
 
 
@@ -728,7 +768,7 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        flash('You have Been Successfully Logged Out.')
+        flash('You have Been Successfully Logged Out.', category="info")
         return redirect(url_for("catalog"))
     else:
 
@@ -737,6 +777,18 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+
+@app.route('/catalog/xml')
+def sitemap_xml():
+    """ returns the complete catalog in 
+    cusotm XML format_name_for_url
+    """
+
+    template = get_cataloged_items()
+    response = make_response(template)
+    response.headers['Content-Type'] = 'application/xml'
+
+    return response
 
 if __name__ == '__main__':
     app.secret_key = APP_SECRET_KEY

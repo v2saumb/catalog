@@ -1,17 +1,41 @@
 {% from "category_helper.html" import render_categories %}
 {% from "item_helper.html" import render_item %}
+{% from "slides_helper.html" import render_slides %}
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+	<ol class="carousel-indicators">
+		{%for idx in range(0,item_count-1) %}
+		<li data-target="#myCarousel" data-slide-to="{{idx}}" class="{%if idx==0%} active {%endif%}"></li>
+	{% endfor %}
+</ol>
+<div class="carousel-inner" role="listbox">
+	{{render_slides(latest_items)}}
+</div>
+<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+	<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+	<span class="sr-only">Previous</span>
+</a>
+<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+	<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+	<span class="sr-only">Next</span>
+</a>
+</div>
+<div class="container">
 <div class="row">
-	<div class="categories-column catlog-heading"><h4>Categories</h4></div>
-	<div class="items-column"> <h4>Latest Items</h4>
+	<div class="col-lg-3"><h4>Categories</h4></div>
+	<div class="col-lg-5"><h4>Items</h4></div>
+	<div class="col-lg-4 pull-right">
 		{% if isSomeoneLoggedIn()  %}
 			<a class='btn btn-primary' href ='{{url_for("new_item")}}' ><i class="fa fa-plus"></i> Add New Item </a>
 		{% endif %}
 	</div>
 </div>
 <div class="row">
-	<div class="categories-column ">{{render_categories(parent_categories,sub_categories)}}</div>
-	<div class="items-column">
-		{{render_item(latest_items)}}
+	<div class="col-lg-3">{{render_categories(parent_categories,sub_categories)}}</div>
+	<div class="col-lg-9">
+		{{render_item(all_items)}}
 		
 	</div>
 </div>
+</div>
+<!--
+-->

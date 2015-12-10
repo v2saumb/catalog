@@ -1,67 +1,97 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 	<head>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="../../favicon.ico">
+		<title>{% if SESSION and SESSION['app_name']%}- {{SESSION['app_name']}} {% endif %} {% if SESSION and SESSION['page_title']%}- {{SESSION['page_title']}} {% endif %}</title>
+		<!-- Bootstrap core CSS -->
+		<link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+		<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+		<link href="{{url_for('static', filename='css/ie10-viewport-bug-workaround.css')}}" rel="stylesheet">
+		<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+		<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+		<script src="{{url_for('static',filename='js/lib/ie-emulation-modes-warning.js')}}"></script>
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+		<!-- Custom styles for this template -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/styles.css')}}">
-		<title>{{SESSION['app_name']}} {% if SESSION['page_title']%}- {{SESSION['page_title']}} {% endif %}</title>
+		
 	</head>
-	<body class="container-fluid">
-		<nav class="navbar navbar-default">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-xs-3">
+	<body >
+		<div class="navbar-wrapper">
+			<div class="container">
+				<nav class="navbar navbar-inverse navbar-static-top">
+					<div class="container">
 						<div class="navbar-header">
-							
+							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							</button>
 							<a href='{{url_for("catalog")}}' class="navbar-brand">Sams Item Catalog</a>
 						</div>
-					</div>
-					<div class="col-xs-4">
-						<ul class="nav navbar-nav">
-							<li>	<a href='{{url_for("catalog")}}' ><i class="fa fa-home"></i> Home</a></li>
-							<li><a href='{{url_for("categories")}}' class="navbar-nav"><i class="fa fa-list"></i> Categories</a></li>
-							<li><a href='{{url_for("items")}}' class="navbar-nav"><i class="fa fa-futbol-o"></i> Items</a></li>
-							<li><a href='{{url_for("users")}}' class="navbar-nav"><i class="fa fa-users"></i> Users</a></li>
-							
-							
-							{% if isSomeoneLoggedIn()  %}
-								<li><a href='{{url_for("gdisconnect")}}' class="navbar-nav"><i class="fa fa-sign-out"></i> Logout</a></li>
-							{% else %}
-								<li><a href='{{url_for("login")}}' class="navbar-nav"><i class="fa fa-sign-in"></i> Login</a></li>
-							{% endif %}
-						</ul>
-						
-					</div>
-					<div class="col-xs-3"></div>
-					<div class="col-xs-2 user-profile">
-						{% if SESSION.username  %}
+						<div id="navbar" class="navbar-collapse collapse">
 							<ul class="nav navbar-nav">
-								<li class="navbar-nav user-image">
-									{% if SESSION.accountType == "ADMIN" %}
-									<div class="adminuser btn btn-danger "><i class="fa fa-user-secret"></i></div>
-									{% else %}
-										{% if SESSION.picture  %}
-											<img src="{{SESSION.picture}}" alt='{{SESSION.username}}'/>
+								<li class="active"><a href='{{url_for("catalog")}}' ><i class="fa fa-home"></i> Home</a></li>
+								<li><a href='{{url_for("categories")}}' class="navbar-nav"><i class="fa fa-list"></i> Categories</a></li>
+								<li><a href='{{url_for("items")}}' class="navbar-nav"><i class="fa fa-futbol-o"></i> Items</a></li>
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administration <span class="caret"></span></a>
+									<ul class="dropdown-menu">
+										<li><a href='{{url_for("users")}}' class="navbar-nav"><i class="fa fa-users"></i> Users</a></li>
+										<li><a href="{{url_for('sitemap_xml')}}">XML Catalog</a></li>
+										<li><a href="#">JSON</a></li>
+										<li role="separator" class="divider"></li>
+										<li class="dropdown-header">Login</li>
+										{% if isSomeoneLoggedIn()  %}
+											<li><a href='{{url_for("gdisconnect")}}' class="navbar-nav"><i class="fa fa-sign-out"></i> Logout</a></li>
+										{% else %}
+											<li><a href='{{url_for("login")}}' class="navbar-nav"><i class="fa fa-sign-in"></i> Login</a></li>
 										{% endif %}
-									{% endif %}
+									</ul>
 								</li>
-								<li class="navbar-nav user-name"> {{SESSION.username}}</li>
+								{% if SESSION and SESSION.username  %}
+									
+									<li class="navbar-nav user-image">
+										{% if SESSION.accountType == "ADMIN" %}
+											<div class="adminuser btn btn-danger "><i class="fa fa-user-secret"></i></div>
+										{% else %}
+											{% if SESSION.picture  %}
+												<img src="{{SESSION.picture}}" alt='{{SESSION.username}}'/>
+											{% endif %}
+										{% endif %}
+									</li>
+									<li class="navbar-nav user-name"> {{SESSION.username}}</li>
+									
+									
+								{% endif %}
 							</ul>
-							
-						{% endif %}
-						
-						
+						</div>
 					</div>
-				</div>
+				</nav>
 			</div>
-		</nav>
-		{% with messages = get_flashed_messages()%}
+		</div>
+		
+		{% with messages = get_flashed_messages(with_categories=true)%}
 		{% if messages %}
-			{% for message in messages %}
-				<div class="row"><div class="col-xs-12 message" >
+			<div class="container alert-container">
+				{% for category, message in messages %}
 					
-					{{message}}
-				</div></div>
-			{% endfor %}
+					<div id="alert-message"class="alert alert-{% if category %}{{category}}{%else%} info {%endif%} " >
+						{{message}}
+					</div>
+					
+				{% endfor %}
+			</div>
 		{% endif %}
 	{% endwith %}

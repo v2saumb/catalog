@@ -1,0 +1,17 @@
+{% macro render_slides(latest_items) %}
+{%for idx, item in latest_items %}
+<div class="item {%if idx==0%} active {%endif%}">
+	<img class="slide-{{idx}}" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="First slide">
+	<div class="container">
+		<div class="carousel-caption">
+		<img class="img-circle carousel-item-image" src="{{item.pictureurl}}" alt="Generic placeholder image" >
+			<h3>{{item.name}}.</h3>
+			<p> </p>
+			<p><a class="btn btn-lg btn-primary" href="{{url_for('category_item',
+				category_name=format_name_for_url(get_category_name(item.category_id)) ,
+			item_name=format_name_for_url(item.name) )}}" role="button">View Item</a>  <a class="btn btn-lg btn-default" href="{{url_for('category_listings', category_name=format_name_for_url(get_category_name(item.category_id))) }}" role="button">View All Under - {{get_category_name(item.category_id)}}</a> </p>
+		</div>
+	</div>
+</div>
+{% endfor %}
+{% endmacro %}
