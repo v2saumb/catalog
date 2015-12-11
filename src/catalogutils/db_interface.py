@@ -150,7 +150,9 @@ class catalog_interface:
             tempitem.pictureurl = item.pictureurl
             tempitem.isActive = item.isActive
             tempitem.category_id = item.category_id
-            tempitem.user_id = item.user_id
+            print item.user_id
+            if item.user_id is not None:
+                tempitem.user_id = item.user_id
             self.dsession.add(tempitem)
             self.dsession.commit()
             result = True

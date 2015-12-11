@@ -15,13 +15,14 @@
 		   <items>
 		   	{% for item in items %}
 			{% if item.category_id == subcat.id >0 %}
+			<item>
 				<id>{{item.id}}</id>
 		   		<name>{{item.name}}</name>
 		   		<pricerange>{{item.pricerange}}</pricerange>
 		   		<description>{{item.description}}</description>
 		   		<active>{{item.isActive}}</active>
 		   		<url>{{url_for('category_item',category_name=format_name_for_url(get_category_name(item.category_id)) ,item_name=format_name_for_url(item.name) )}}
- </url>
+ </url></item>
 			{%endif%}
 			{% endfor%}
 		   </items>

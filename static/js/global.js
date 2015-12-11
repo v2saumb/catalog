@@ -8,18 +8,18 @@
 
     if ($(".left-nav-trigger") !== undefined) {
         $(".left-nav-trigger").each(function(event) {
-            $(this).bind("click", navTriggerClick)
+            $(this).bind("click", navTriggerClick);
         });
     }
     if ($("ul.left-nav-ul li.left-nav-item") !== undefined) {
         $("ul.left-nav-ul li.left-nav-item").each(function(event) {
-            $(this).bind("click", nav_item_click)
+            $(this).bind("click", nav_item_click);
         });
     }
 
     if ($(".catalog-item") !== undefined) {
         $(".catalog-item").each(function(event) {
-            $(this).bind("click", nav_item_click)
+            $(this).bind("click", nav_item_click);
         });
     }
 
@@ -27,10 +27,25 @@
     if ($("form[name='category_form']") !== undefined) {
         $("form[name='category_form']").find("#name").bind("keydown", inputValidator);
     }
-
-    $("#alert-message").fadeTo(2000, 500).slideUp(500, function(){
-    $("#alert-message").alert('close');
+    if ($("#back-to-top") !== undefined) {
+        $("#back-to-top").find("#name").bind("click", goToTop);
+    }
+    $("#alert-message").fadeTo(2000, 500).slideUp(500, function() {
+        $("#alert-message").each(
+            function(event) {
+                $(this).alert('close');
+            }
+        );
     });
+
+
+    function goToTop(event) {
+        $("body").animate({
+            scrollTop: 0
+        }, "fast");
+        return false;
+    }
+
 
     function nav_item_click(event) {
         window.location.href = $(this).attr('data-items-url');
@@ -52,15 +67,13 @@
 
     function updateImage() {
         src = $(this).val();
-        $("form[name='add_edit_item']").find("#uploadedimage").attr("src", src);
+        if (src != undefined && src !=""){
+           $("form[name='add_edit_item']").find("#uploadedimage").attr("src", src);
+        }
     }
 
     function navTriggerClick(event) {
         var targetElm = "cat_" + $(this).attr('id');
         $("#" + targetElm).toggleClass("hide-element");
     }
-
-    
-
-
 })(jQuery);

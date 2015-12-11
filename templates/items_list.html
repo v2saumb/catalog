@@ -22,6 +22,7 @@
     <div class='col-md-3'><img src="{% if item.pictureurl %}{{item.pictureurl}} {% else %} {{url_for('static', filename='images/img-not-found.png')}} {%endif%}" class="img-circle" width="140" height="140"/><strong><p>{{item.name}}</p></strong>
         <p><strong>Price Range: </strong>{{item.pricerange}}</p>
         <p><strong >Category: </strong>{{get_category_name(item.category_id)}}</p>
+        <p><strong >User Id: </strong>{{item.user_id}}</p>
     </div>
     <div class="col-md-3"><p class="list-item-desc">{{item.description }}</p></div>
     <div class='col-md-1 align-center'>{% if item.isActive%}<i class="fa fa-check text-success"></i>{%else%}<i class="fa fa-ban text-danger"></i>{%endif%}</div>
@@ -44,7 +45,7 @@
             <a class='btn btn-primary ' href ='{{url_for("new_item", item_id=item.id)}}' ><i class="fa fa-pencil"></i> Edit</a>
         </div>
         <div class='col-md-1 v-middle'>    
-            <a class='btn btn-danger ' href ='{{url_for("delete_item")}}' ><i class="fa fa-trash-o"></i> Delete</a>
+            <a class='btn btn-danger ' href ='{{url_for("confirm_delete",delete_type="items", delete_key=item.id)}}' ><i class="fa fa-trash-o"></i> Delete</a>
         </div>
           <div class='col-md-1 v-middle'>    
         </div>

@@ -1,0 +1,20 @@
+<div class="container item-form">
+	<div class='row'><div class='col-md-6'><h3> Confirm Delete Action  </h3></div>
+	<div class='col-md-6 align-right'>
+		
+		<a class='btn btn-primary' href ='{{url_for(type)}}' > Back </a>
+		
+	</div></div>
+	<div class='row'>
+		<div class='col-md-12'>
+			<h3> Are You Sure You Want to delete - {{item.name}}</h3>
+		</div>
+	</div>
+	<div class='row'>
+	<div class='col-md-12 '>
+		<form method="post" action='{{url_for("delete_item", delete_type=type, delete_key=item.id )}}' >
+			<input type="hidden" value="{{generate_state()}}" id="state" name="state" />
+			<input type="submit" class='btn btn-danger' value="Yes Delete">
+		</form>
+	</div></div>
+</div>

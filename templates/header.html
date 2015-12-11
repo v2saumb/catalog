@@ -5,9 +5,9 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-		<meta name="description" content="">
-		<meta name="author" content="">
-		<link rel="icon" href="../../favicon.ico">
+		<meta name="description" content="Item Catalog Project">
+		<meta name="author" content="Saumya Bhatnagar">
+		<link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}">
 		<title>{% if SESSION and SESSION['app_name']%}- {{SESSION['app_name']}} {% endif %} {% if SESSION and SESSION['page_title']%}- {{SESSION['page_title']}} {% endif %}</title>
 		<!-- Bootstrap core CSS -->
 		<link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
@@ -49,8 +49,9 @@
 									<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administration <span class="caret"></span></a>
 									<ul class="dropdown-menu">
 										<li><a href='{{url_for("users")}}' class="navbar-nav"><i class="fa fa-users"></i> Users</a></li>
-										<li><a href="{{url_for('sitemap_xml')}}">XML Catalog</a></li>
-										<li><a href="#">JSON</a></li>
+										<li><a href="{{url_for('catalog_xml')}}" target="_blank">Catalog XML Catalog</a></li>
+										<li><a href="{{url_for('catalog_json')}}" target="_blank">Catalog JSON</a></li>
+										<li><a href="{{url_for('recent_items_feed')}}" target="_blank">Latest Items Atom Feed</a></li>
 										<li role="separator" class="divider"></li>
 										<li class="dropdown-header">Login</li>
 										{% if isSomeoneLoggedIn()  %}
@@ -60,22 +61,21 @@
 										{% endif %}
 									</ul>
 								</li>
-								{% if SESSION and SESSION.username  %}
-									
-									<li class="navbar-nav user-image">
-										{% if SESSION.accountType == "ADMIN" %}
-											<div class="adminuser btn btn-danger "><i class="fa fa-user-secret"></i></div>
-										{% else %}
-											{% if SESSION.picture  %}
-												<img src="{{SESSION.picture}}" alt='{{SESSION.username}}'/>
-											{% endif %}
-										{% endif %}
-									</li>
-									<li class="navbar-nav user-name"> {{SESSION.username}}</li>
-									
-									
-								{% endif %}
 							</ul>
+							{% if SESSION and SESSION.username  %}
+							<ul class="nav navbar-nav navbar-right">
+								<li class="user-image">
+									{% if SESSION.accountType == "ADMIN" %}
+										<div class="adminuser btn btn-danger "><i class="fa fa-user-secret"></i></div>
+									{% else %}
+										{% if SESSION.picture  %}
+											<img src="{{SESSION.picture}}" alt='{{SESSION.username}}'/>
+										{% endif %}
+									{% endif %}
+								</li>
+								<li class="user-name"> {{SESSION.username}}</li>
+								<li class="nav-end">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+							</ul>{% endif %}
 						</div>
 					</div>
 				</nav>

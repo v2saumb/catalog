@@ -1,16 +1,19 @@
 # webserver for the restaurant menu application
-import sys
 import random
 import string
 import httplib2
 import json
 import requests
 import datetime
+import xmltodict
+from datetime import timedelta
+from urlparse import urljoin
+from werkzeug.contrib.atom import AtomFeed
 from flask import Flask, render_template, request
 from flask import redirect, url_for, flash, jsonify
 from flask import session as login_session
 from flask import make_response
-from os import curdir, pardir, sep
+from os import curdir, sep
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.catalogdb.database_setup import Categories, User, Items, Base
@@ -22,7 +25,6 @@ from src.catalogutils.catalogforms import CategoriesForm, ItemForm
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from oauth2client.client import AccessTokenCredentials
-import itertools
 
 DATABASE_FILEPATH = curdir + sep + 'src/catalogdb/catalogdatabase.db'
 GOOGLE_FILE = curdir + sep + 'src/json/client_secrets.json'
@@ -36,7 +38,7 @@ app.logger.debug("DB Session OK")
 catalogDb = catalog_interface(session)
 
 # number of results to display per page
-PER_PAGE = 10
+PER_PAGE = 9
 
 #  Client Id for Google
 CLIENT_ID = json.loads(
@@ -46,13 +48,16 @@ CLIENT_ID = json.loads(
 APPLICATION_NAME = "Sams Item Catalog"
 
 # secret key for the sessions
-APP_SECRET_KEY = 'thisisaseceretkey'
+APP_SECRET_KEY = 'thisisaseceretkeythisisaseceretkeythisisaseceretkey'
 
 # No of items to display in the crousel
 NO_LATEST_ITEMS = 9
 
 # How may days old is treated as new
 CUT_OFF_DATE = 7
+
+# session timeout
+SESSION_TIME_OUT = 3
 
 
 def update_category_list():
@@ -195,18 +200,6 @@ def get_cataloged_items():
     return render_template('sitemap.xml', parent_categories=parent_categories,
                            sub_categories=sub_categories,
                            items=items)
-    # category_item = catalogDb.get_category_item_by_name(db_category_name,
-    #                                                     db_item_name)
-    # print category_item
-    # if not category_item:
-    #     result = render_template('error.html',
-    #                              message="Oops! We could not serve what you were looking for...")
-    # else:
-    #     result = render_template("category_item_view.html",
-    #                              parent_categories=parent_categories,
-    #                              sub_categories=sub_categories,
-    #                              category_item=category_item)
-    return True
 
 
 def process_admin_login(adminuser):
@@ -285,7 +278,7 @@ def get_category_name(category_id):
     try:
         result = login_session['categorylist'][category_id]
     except:
-        app.logger.debug("cat list empty category_id" + str(category_id))
+        app.logger.debug("cat list empty category_id " + str(category_id))
         login_session['categorylist'] = update_category_list()
         result = login_session['categorylist'][category_id]
 
@@ -308,6 +301,38 @@ def unformat_name_for_url(conversion_string):
     return conversion_string.replace("~", ' ')
 
 
+@app.before_request
+def add_state():
+    login_session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=SESSION_TIME_OUT)
+    app.logger.debug(request.path)
+    if request.method == "POST":
+        try:
+            token = login_session['state']
+        except:
+            token = None
+
+        app.logger.debug(token)
+        request_token = request.form.get('state') or request.args.get('state')
+        app.logger.debug(request_token)
+        if not token or token != request_token:
+            flash("Invalid request or session timed out please login again", "danger")
+            return redirect(url_for('login'))
+        else:
+            app.logger.debug("Valid Token Proceed")
+
+
+def generate_state():
+    if 'state' not in login_session:
+        state = ''.join(random.choice(string.ascii_uppercase +
+                                      string.digits) for x in xrange(32))
+        login_session['state'] = state
+    return login_session['state']
+
+
+def create_external_url(url):
+    return urljoin(request.url_root, url)
+
 # adding required functions to the template system
 app.jinja_env.globals['other_page_urls'] = other_page_urls
 app.jinja_env.globals['isSomeoneLoggedIn'] = is_someone_Loggedin
@@ -315,6 +340,7 @@ app.jinja_env.globals['isAdminLoggedIn'] = is_admin_loggedin
 app.jinja_env.globals['verifyOwnerLogin'] = verify_owner_login
 app.jinja_env.globals['get_category_name'] = get_category_name
 app.jinja_env.globals['format_name_for_url'] = format_name_for_url
+app.jinja_env.globals['generate_state'] = generate_state
 
 
 def set_page_title(page_name):
@@ -448,7 +474,12 @@ def new_category(categoryId):
     serves the request for new category and edit categories
     """
     try:
-
+        if not is_someone_Loggedin() and not is_admin_loggedin():
+            output = render_template('header.html', SESSION=login_session)
+            output += render_template('error.html',
+                                      message="Please log in to add /edit Categories.")
+            output += render_template('footer.html')
+            return output
         form = CategoriesForm(request.form)
         form.parent.choices = [(int(cat.id), cat.name)
                                for cat in catalogDb.get_all_parent_categories()]
@@ -497,6 +528,12 @@ def new_item(item_id):
     serves the request for new item and edit item
     """
     try:
+        if not is_someone_Loggedin() and not is_admin_loggedin():
+            output = render_template('header.html', SESSION=login_session)
+            output += render_template('error.html',
+                                      message="Please log in to add / edit Items.")
+            output += render_template('footer.html')
+            return output
 
         form = ItemForm(request.form)
         form.category_id.choices = [(int(cat.id), cat.name)
@@ -533,7 +570,6 @@ def new_item(item_id):
         output += render_template('error.html',
                                   message="Oops Something went wrong")
         output += render_template('footer.html')
-        raise
 
     return output
 
@@ -556,22 +592,56 @@ def delete_category():
     return output
 
 
-@app.route('/edititem')
-def edit_item():
+@app.route('/confirmdelete/<delete_type>/<int:delete_key>')
+def confirm_delete(delete_type, delete_key):
+    try:
+        if delete_type == 'items':
+            itemX = catalogDb.get_item_by_id(delete_key)
+        elif delete_type == 'user':
+            itemX = catalogDb.get_item_by_id(delete_key)
+        elif delete_type == 'catagory':
+            itemX = catalogDb.get_item_by_id(delete_key)
+
+    except:
+        output = render_template('header.html', SESSION=login_session)
+        output += render_template('error.html',
+                                  message="Oops Something went wrong")
+        output += render_template('footer.html')
+
     output = ''
     output = render_template('header.html', SESSION=login_session)
-    output += "Edit Puppy Code"
-    output += render_template('footer.html')
+    output += render_template('confirm_delete.html', type=delete_type,
+                              item=itemX, SESSION=login_session)
+    output += render_template('footer.html', SESSION=login_session)
     return output
 
 
-@app.route('/deleteitem')
-def delete_item():
-    output = ''
-    output = render_template('header.html', SESSION=login_session)
-    output += "delete Puppy Code"
-    output += render_template('footer.html')
-    return output
+@app.route('/deleteitem/<delete_type>/<int:delete_key>', methods=['POST'])
+def delete_item(delete_type, delete_key):
+    print delete_type
+    print str(delete_key)
+    if not is_someone_Loggedin() and not is_admin_loggedin():
+        output = render_template('header.html', SESSION=login_session)
+        output += render_template('error.html',
+                                  message="Please log in to add / edit Items.")
+        output += render_template('footer.html')
+        return output
+
+    try:
+        if delete_type == 'items':
+            itemX = catalogDb.get_item_by_id(delete_key)
+        elif delete_type == 'user':
+            itemX = catalogDb.get_item_by_id(delete_key)
+        elif delete_type == 'catagory':
+            itemX = catalogDb.get_item_by_id(delete_key)
+
+    except:
+        output = render_template('header.html', SESSION=login_session)
+        output += render_template('error.html',
+                                  message="Oops Something went wrong")
+        output += render_template('footer.html')
+
+    return redirect(url_for('items'))
 
 
 @app.route('/login')
@@ -708,6 +778,7 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
+    login_session['accountType'] = "GOOGLE"
     newUser = User(name=login_session['username'],
                    email=login_session['email'],
                    accounttype="GOOGLE", lastlogin=datetime.date.today(),
@@ -743,7 +814,7 @@ def admin_logout():
 @app.route('/gdisconnect')
 def gdisconnect():
     app.logger.debug("Verifying  the type of account")
-    if login_session['accountType'] == "ADMIN":
+    if login_session['accountType'] and login_session['accountType'] == "ADMIN":
         return redirect(url_for("admin_logout"))
 
     access_token = login_session['access_token']
@@ -778,10 +849,10 @@ def gdisconnect():
         return response
 
 
-@app.route('/catalog/xml')
-def sitemap_xml():
-    """ returns the complete catalog in 
-    cusotm XML format_name_for_url
+@app.route('/catalog.xml')
+def catalog_xml():
+    """ returns the complete catalog in
+    cusotm XML
     """
 
     template = get_cataloged_items()
@@ -790,8 +861,61 @@ def sitemap_xml():
 
     return response
 
+
+@app.route('/catalog.json')
+def catalog_json():
+    """ returns the complete catalog in
+    cusotm json
+    """
+
+    template = get_cataloged_items()
+    parsed = xmltodict.parse(template)
+    print parsed
+    response = make_response(json.dumps(parsed))
+    response.headers['Content-Type'] = 'application/json'
+
+    return response
+
+
+@app.route('/newitems.atom')
+def recent_items_feed():
+    feed = AtomFeed('New Items',
+                    feed_url=request.url, url=request.url_root)
+    items = catalogDb.get_latest_items(CUT_OFF_DATE,
+                                       NO_LATEST_ITEMS)
+    for item in items:
+        text = " New item in category " + get_category_name(item.category_id)
+        text += " Price Range" + str(item.pricerange)
+        text += " Item Description " + item.description[100:]
+        text += "... Read more here "
+        text += create_external_url(
+            url_for('category_item',
+                    category_name=format_name_for_url(
+                        get_category_name(item.category_id)),
+                    item_name=format_name_for_url(item.name)))
+
+        feed.add(item.name, unicode(text),
+                 content_type='html',
+                 author="Sams Item Catalog",
+                 url=create_external_url(
+            url_for('category_item',
+                    category_name=format_name_for_url(
+                        get_category_name(item.category_id)),
+                    item_name=format_name_for_url(item.name))),
+                 updated=item.lastupdated or item.created,
+                 published=item.created)
+    return feed.get_response()
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """ routes the invalid Urls back to the home page"""
+    flash("We could not find the what you were looking for..", "danger")
+    return redirect(url_for("catalog"))
+
 if __name__ == '__main__':
     app.secret_key = APP_SECRET_KEY
     app.debug = True
-    app.logger.debug("Starting The Server at port 5000")
-    app.run(host='0.0.0.0', port=5000)
+    app.permanent_session_lifetime = timedelta(minutes=5)
+    app.logger.debug("Starting The Server at port 8000")
+    app.run(host='0.0.0.0', port=8000)

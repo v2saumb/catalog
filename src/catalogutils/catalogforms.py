@@ -45,7 +45,8 @@ class ItemForm(Form):
         'Item Description', [validators.Length(min=4, max=2500)])
     pricerange = StringField('Item Price Range', [
                              validators.Length(min=2, max=255)])
-    pictureurl = TextAreaField('Item Picture URL', [validators.Length(max=1000)])
+    pictureurl = TextAreaField(
+        'Item Picture URL', [validators.Length(max=1000)])
     isActive = BooleanField('Active')
     category_id = SelectField(u'Category', coerce=int,
                               validators=[validators.optional()])
