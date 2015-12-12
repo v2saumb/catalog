@@ -32,7 +32,7 @@
         </div>
         <div class='col-md-1'>
             {% if user.accounttype != 'ADMIN'  %}
-            <a class='btn btn-danger' href ='{{url_for("delete_user")}}' ><i class="fa fa-trash-o"></i> Delete</a>
+            <a class='btn btn-danger ' href ='{{url_for("confirm_delete",delete_type="users", delete_key=user.id)}}' ><i class="fa fa-trash-o"></i> Delete</a>
             {% endif %}
         </div>
     {% else %}

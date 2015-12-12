@@ -1,5 +1,5 @@
 {% from "form_helper.html" import render_field %}
-<div class="container login-form-container">
+<div class="container item-form">
 <form method='post' action="{{url_for('admin_login')}}">
     {{ render_field(form.email) }}
     {{ render_field(form.password) }}

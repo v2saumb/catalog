@@ -1,0 +1,22 @@
+{% from "category_helper.html" import render_categories %}
+{% from "item_helper.html" import render_item %}
+<div class="container">
+<div class="row">
+	<div class="col-lg-3"><h4>Categories</h4></div>
+	<div class="col-lg-5"><h4>Items</h4></div>
+	<div class="col-lg-4 pull-right">
+		{% if isSomeoneLoggedIn()  %}
+			<a class='btn btn-primary' href ='{{url_for("new_item")}}' ><i class="fa fa-plus"></i> Add New Item </a>
+		{% endif %}
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-3">{{render_categories(parent_categories,sub_categories)}}</div>
+	<div class="col-lg-9">
+		{{render_item(all_items)}}
+		
+	</div>
+</div>
+</div>
+<!--
+-->

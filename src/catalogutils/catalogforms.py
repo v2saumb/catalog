@@ -1,6 +1,8 @@
 from wtforms import Form, StringField, validators, PasswordField
 from wtforms import BooleanField, HiddenField, SelectField, TextAreaField
 
+# form for the user table
+
 
 class UserForm(Form):
     name = StringField('User Name', [validators.Length(min=4, max=25)])
@@ -20,6 +22,8 @@ class UserForm(Form):
         'Repeat Password', [validators.Length(min=4, max=25)])
     id = HiddenField('id')
 
+# form for the Admin login
+
 
 class AdminLoginForm(Form):
     email = StringField('Email Address', [validators.Length(
@@ -29,6 +33,8 @@ class AdminLoginForm(Form):
         'Password',
         [validators.InputRequired(message="Password cannot be blank!")])
 
+# form for the categories screen
+
 
 class CategoriesForm(Form):
     name = StringField('Category Name', [validators.Length(min=4, max=255)])
@@ -37,6 +43,8 @@ class CategoriesForm(Form):
     isActive = BooleanField('Active')
     hasChildren = BooleanField('Has Sub Categories')
     id = HiddenField('id')
+
+# form for the Item
 
 
 class ItemForm(Form):

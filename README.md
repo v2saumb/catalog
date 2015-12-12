@@ -37,7 +37,12 @@ A web application for catalog management. The Item Catalog web application that 
 1. [Extra Credit Features](#extra-credit-features)
 1. [Code Documentation ](#code-documentation)
     - [Folder Structure ](#folder-structure)
-
+    - [src/catalogdb/database_setup.py](#database-setup-file)
+    - [src/catalogdb/catalog_data_script.py](#catalog-data-script)
+    - [src/catalogutils/catalogforms.py](#catalog-forms)
+    - [src/catalogutils/custompagination.py](#custom-pagination)
+    - [src/catalogutils/db_interface.py](#db-interface)
+    - [application.py](#application-file)
 1. [Database Structure ](#database-structure)
 
 ---
@@ -89,16 +94,11 @@ The application can now be accessed [http://localhost:8000]( http://localhost:80
 
 ## Assumptions
 
-1. There is no web interface required for this phase of the project.
-1. This version of code support both even and odd number of players.
-1. The user will have to manually switch the game number and round number whenever reporting the matches
-1. The current code has been tested for up to 3 rounds and 3 games per round.
-1. When paring the code randomly decides who plays who within the same score group and if there are odd number of players it pushes the first player form the group to the next lower scoring group
-1. If there are odd Number of players one of the player receives  a bye win and rest are randomly matched 
-1. Most of the scoring and paring logic is based of [SWISS-STYLE PAIRING SYSTEM ](http://www.wizards.com/dci/downloads/swiss_pairings.pdf) by the wizards of the coasts.
-1. The test cases have been modified for the additional features.
-1. The required environment is available to run the code.
-1. Delete all players used in the test cases are only for housekeeping and are not mandatory to be run
+1. If the user is deleted the items associated are also deleted.
+1. If the category is deleted the items associated are also deleted.
+1. The category names are unique.
+1. Only administrators are allowed to create new categories.
+1. If latest items are not available as the specified time limit, the latest items are decided based on the created date.
 
 
 **[Back to top](#table-of-contents)**
@@ -120,624 +120,727 @@ The application can now be accessed [http://localhost:8000]( http://localhost:80
 ---
 ##Code Documentation
 
-The file tournament.py is where all the code for this module is. The details of all the functions is listed below.
-
-### calculatePlayerMatchScore(eventId, gameNumber, winnerId, loserId=None,isDraw=False, isBye=False)
-
-Calculates the match score for a player;
-
-* Arguments:
-    * gameNumber: the gamenumber for which the scoring is done
-    * eventId: the event id
-    * matchId: the match Id
-    * winnerId: the playerID from the eventmatches table. if it
-        is a bye sent the player receiving a bye as winner
-    * loserId the playerId from the eventmatches table for the
-        losing player.
-    * isDraw: true or false depending on if this was a draw
-        or not. this
-        should be null in case of a bye
-    * isBye: true or false depending on if this was a bye win.
-        remember only one bye is allowed per event for a player.
-* Returns:
-    * score = {"winnerScore": <score>, "loserScore": <score>}
-        Based on the following rule.
-            * 0 (zero) if this is not the last game for the match
-                or match lost
-            * 3 if matches won
-            * 1 if the match was a draw.
-            * Match won 3 points
-            * Match drawn 1 point
-            * Match lost 0 points
-
-
-**[Back to top](#table-of-contents)**
-
----
-
-### connect()
-    
-Connect to the PostgreSQL database.
-
-* Returns
-    * returns a database connection.
-
-**[Back to top](#table-of-contents)**
-
----
-
-### countRegisteredPlayers()
-Returns the number of players currently registered.
-
-* Returns:
-    * The count of number of players currently registered.
-    
-**[Back to top](#table-of-contents)**
-
----
-
-### countEventPlayers(eventid)
-
-Returns the number of players currently registered for a
-particular event.
-
-* Arguments:
-    * eventid: the event for which the count of players is required
-
-* Returns:
-    * The count of number of players currently registered for an event.
-
-**[Back to top](#table-of-contents)**
-
----
-
-### countEventMatches(eventId)
-    
-Counts the number of matches for an event.
-
-* Arguments
-    * eventId: The event Id for which the count is required.
-
-* Returns
-    * Returns the count of matches already registered.
-
-**[Back to top](#table-of-contents)**
-
----
-
-### countEventMatchesPlayed(eventId)
-    
-Counts the number of matches already played for an event.
-
-* Arguments
-    * eventId: The event Id for which the count is required.
-
-* Returns
-    * Returns the count of matches already registered and played.
-
-**[Back to top](#table-of-contents)**
-
----
-
-### countGamesPerRound(eventId)
-    
-Counts the number of games played per round for an event.
-
-* Arguments
-    * eventId: The event Id for which the count is required.
-
-* Returns
-    * Returns the count of games played per round for an event.
-
-
-**[Back to top](#table-of-contents)**
-
----
-
-### countRoundPerEvent(eventId)
-    
-Counts the number of rounds played per  event.
-
-* Arguments
-    * eventId: The event Id for which the count is required.
-
-* Returns
-    * Returns the count of rounds played per event.
-
-
-**[Back to top](#table-of-contents)**
-
----
-
-### createevent(eventName, rounds=1, games=1)
-
-Create a new event and return the event ID for it
-
-* Arguments:
-    * eventName: the name of the new event
-    * rounds: how many rounds will be played for an event.Defaults to 1 if not passed.  
-    * games: how many games will be played for per round.Defaults to 1 if not passed.  
-
-**[Back to top](#table-of-contents)**
-
----
-
-### creategamesperround(eventId, games, DB)
-    
-Inserts game mapping records for eventfulness
-
-* Arguments:
-    * eventId: the event for which the games have to be mapped
-    * games: the number of games that need to be added
-    * DB: the database connection
-
-**[Back to top](#table-of-contents)**
-
----
-
-### createParingGroups(currentStandings)
-
-Breaks the standings in smaller groups based on points
-
-* Arguments
-    * currentStandings : the events current standings.
-
-
-**[Back to top](#table-of-contents)**
-
----
-
-### createParings(currentStandings, eventId)
-
-Creates the parings for the event.
-
-* Arguments
-    * currentStandings : the events current standings.
-    
-**[Back to top](#table-of-contents)**
-
----
-
-### createByeRecord(byePlayer, eventId)
-    
-Processes the bye record. This function will created a bye match and
-then report the score for it
-
-*  Arguments:
-    
-**[Back to top](#table-of-contents)**
-
----
-
-### createroundsperevent(eventId, games, DB)
-
-Inserts game mapping records for eventfulness
-
-* Arguments:
-    * eventId: the event for which the games have to be mapped
-    * rounds: the number of rounds that need to be added for the
-         event
-    * DB: the database connection
-
-**[Back to top](#table-of-contents)**
-
----
-
-### deleteEvent(eventId)
-    
-Deletes the event and all related records.
-
-* Arguments:
-    * eventId: The event id for which the matches have to be deleted.
-* Returns:
-    * Returns the number of records deleted.
-
-**[Back to top](#table-of-contents)**
-
----
-
-### deleteMatches(eventId, matchId=None)
-    
-Remove all the match records from the database. if a matchId is passed
-only that specific match record will be deleted.
-when the match record is deleted the scores are
-also deleted automatically
-
-* Arguments:
-    * eventId: The event id for which the matches have to be deleted.
-    * matchId: if match id is passed only this match record is deleted.
-
-* Returns:
-    * Returns the number of records deleted.
-
-
-**[Back to top](#table-of-contents)**
-
----
-
-### deleteNonUniquePlayers(name)
-    
-If there are more than one players with the same name
-this function shows the user a list of players to choose from
-The user can choose "ALL" to delete all the players with a name
-The user can also choose 0 to skip Deletion.
-The user can select an ID to delete on of the players form the list
-
-* Arguments:
-    
-**[Back to top](#table-of-contents)**
-
----
-
-### deleteAllPlayers()
-    
-This function deletes all the registered players.
-
-**[Back to top](#table-of-contents)**
-
----
-
-### deletePlayers(playername)
-    
-Deletes the player records from the database with a name.
-
-* Arguments:
-    * playername: the player's full name (need not be unique).
-
-
-**[Back to top](#table-of-contents)**
-
----
-
-### deletePlayersByID(playerId)
-    
-Deletes one single player from the players table
-based on the player_playerId
-
-* Arguments:
-    * playerId: the players Id that needs to be deleted
-
-* Returns:
-    * The number of records deleted
-
-**[Back to top](#table-of-contents)**
-
----
-
-### deleteUniquePlayer(name)
-    
-Deletes all players with a unique name.
-
-* Arguments:
-    * name: the player that has to be deleted.
-
-* Returns:
-    * the number of records deleted
-
-**[Back to top](#table-of-contents)**
-
----
-
-### getCurrentParings(eventId)
-    
-Fetches the list of current mappings
-
-* Argument
-    * eventId: the event Id for which the records are being inserted.
-
-* Returns
-    
-**[Back to top](#table-of-contents)**
-
----
-
-### getDummyUserId(eventId)
-
-Finds and returns the eventPlayerID for the dummy user
-
-*  Arguments:
-    *  eventId : the eventId
-
-* Returns:
-    * Returns the Dummy users player Id
-
-
-**[Back to top](#table-of-contents)**
-
----
-
-### getEventName(eventId)
-    
-Finds and returns the name for the event
-
-*  Arguments:
-    *  eventId : the eventId
-
-* Returns:
-    
-**[Back to top](#table-of-contents)**
-
----
-
-### getIndividualPlayerStanding(eventId, playerId)
-    
-Get the player standing for a single player
-
-* Arguments:
-    * playerId:   the Id of the player for whom the score is required.
-    * eventId:    the event for which scoring is done;
-* Returns: 
-    * A row with player standing
-
-**[Back to top](#table-of-contents)**
-
----
-
-### getMaxGameNumber(eventId)
-
-Returns the max number of games allowed per match
-
-* Arguments :
-    * eventId: the event's id for which information is required.
-* Returns:
-    * Number of games played per round.
-
-
-**[Back to top](#table-of-contents)**
-
----
-
-### insertMatchRecord(eventId, paring, DB)
-
-Inserts the match record in the event matches table
-
-* Argument
-    * eventId: the event Id for which the records are being inserted.
-    * praring:  Paring for the current players
-    * DB: The database connection
-
-* Returns
-    * returns the id for the current inserted record
-
-**[Back to top](#table-of-contents)**
-
----
-
-### insertPlayerScore(eventId, matchId, playerId, gameNumber, roundNumber, matchResult, gameScore, matchScore)
-    
-Inserts the score record for the player for a match
-
-* Arguments:
-    * eventId: the event id
-    * matchId: the match Id
-    * playerId: the Id for the player from the eventplayers table
-    * roundNumber: the round number what is played
-    * gameNumber: The game number for the round for which the score
-        is recorded
-    * matchResult: The result for the player won lost
-        draw or bye
-    * gameScore: points for the game
-    
-**[Back to top](#table-of-contents)**
-
----
-
-### mapPlayersAndEvent(eventId, playerId)
-    
-Inserts a mapping record for the registered players to an event.
-In this version the game number round number have to manually managed
-
-* Arguments:
-    * eventId: the event in question
-    * playerId: the id of the Player to be mapped to this event
-
-**[Back to top](#table-of-contents)**
-
----
-
-### printErrorDetails(errorOccurance, messageStr=None)
-    
-Prints the error details
-* Argument
-    * errorOccurance: Error Object.
-    * messageStr: Any specific message that has to be
-        printed before the error details.
-
-**[Back to top](#table-of-contents)**
-
----
-
-### printPlayerScores(eventId)
-    
-Prints the current player standings for an event.
-
-**[Back to top](#table-of-contents)**
-
----
-
-### processDeletion(msgStr, valid_ids, name)
-
-This function is called from deleteNonUniquePlayers function
-If there are more than one players with the same name
-this function shows the user a list of players to choose from
-The user can choose "ALL" to delete all the players with a name
-The user can also choose 0 to skip Deletion.
-The user can select an ID to delete on of the players form the list
-
-* Arguments:
-    *  msgStr: the Message that needs to be displayed
-    *  valid_ids: a list of valid ids that the user can choose from
-    
-**[Back to top](#table-of-contents)**
-
----
-
-### playerStandings(eventId)
-
-Returns a list of the players and their win records, sorted by wins.
-The first entry in the list should be the player in first place for
-the event, or the player tied for first place if there is currently a tie.
-The results are returned sorted in the following order
-totalpoints desc ,matchesplayed desc, won desc, lost desc , draw desc
-ep.event_id asc, ep.player_id asc
-    
-* Arguments:
-    * eventId: The id for the event for which the player
-         standings are required.
-* Returns:
-    * A list of tuples, each of which contains the following:
-        * event_id:The event id for the event for which the
-         standings are requested
-        * playerid:the player's id assigned for the event
-        (assigned by the database)
-        * player_name: the player's full name (as registered)
-        * gamepoints: the total of gam points
-        * matchpoints: the total of match points
-        * totalpoints: the total score for the player
-        * matchesplayed:the number of matches the player has
-                    played
-        * won: the number of matches the player has won
-        * lost:the number of matches the player has lost
-        * draw:the number of matches the player that were
-                 draw
-        * bye:the number of matches the player has a bye win
-
-**[Back to top](#table-of-contents)**
-
----
-
-### registerPlayer(name, email)
-
-Adds a player to the tournament database.
-The database assigns a unique serial id number for the player. This
-is handled by the SQL database schema.
-
-* Arguments:
-    * name: the player's full name (need not be unique).
-    * email: the email address of the player.
-* Returns:
-    * The new players player id
-
-**[Back to top](#table-of-contents)**
-
----
-
-### reportMatch(eventId, matchId, roundNumber, gameNumber, winnerId,loserId=None, isDraw=False, isBye=False)
-    
-Records the outcome of a single match between two players.
-An entry for the match should exist in the event matches table.
-If there are more than one rounds for games between the same players
-per match, multiple entries are allowed. The games and rounds should be
-mapped in the eventgamemapper and eventgamerounds.
-Scoring is based on [Wizard of the Coast ](http://www.wizards.com/dci/downloads/swiss_pairings.pdf)
-
-Games and matches are worth the following points during Swiss rounds
-
-* Game won 3 points
-* Game drawn 1 point
-* Game lost 0 points
-* Unfinished Game 1 point same as draw
-* Unplayed Game 0 points
-
-Status
-
-1 'WON'
-2 'LOST'
-3 'DRAW'
-4 'BYEWIN'
-
-* Arguments:
-    * eventId: the event id
-    * matchId: the match Id
-    * roundNumber: the round number what is played
-    * gameNumber: The game number for the round for which the
-         score is recorded
-    * winnerId: the playerID from the eventmatches table
-    * loserId the playerId from the eventmatches table for the
-         losing player.
-    * isDraw: true or false depending on if this was a draw or not
-    * isBye: true or false depending on if this was a bye win.
-         remember only one bye is allowed per event for a player.
-
-**[Back to top](#table-of-contents)**
-
----
-
-
-### randomizeGroup(group)
-    
-Returns the shuffled group
-
-* Argument
-        * group: List of players registered for the match
-
-**[Back to top](#table-of-contents)**
-
----
-
-
-### showAllPlayers()
-   
-Display the list of players registered can be used to when creating event mappings etc
-
-**[Back to top](#table-of-contents)**
-
----
-
-### swissPairings(eventId)
-    
-Pairs the players for the next round of a match and inserts the match.
-records in this process.The function tries to randomly match the players with the similar match records.
- If the group of players playing in this event are odd then one players receives a bye win that is also recorded during this process.
-
-* Arguments:
-    * eventId : the event for which the standings are required
-* Returns:
-    * A list of tuples, each of which contains (Player1,Player2,matchId)
-        * Player1: The first player's details with current standing
-        * Player2: The details for the second with the current standings
-        * matchId: The new matchId for the match between these players
-
-**[Back to top](#table-of-contents)**
-
----
-
-
-### updateMatchPlayedStatus(matchId, DB)
-
-Updates the match played record.
-
-* Arguments
-    * matchId: the match in question for which the record is to be updated.
-    * DB: The database connection
-
-* Returns
-    * Returns the number of records updated.
-
-**[Back to top](#table-of-contents)**
-
----
-
-### verifyPairs(currentPairings, newParing)
-    
-Checks if the new pairs are unique.
-
-* Argument
-    * currentPairings: the list of current pairs.
-    * newParing: The new pairs that were just created.
-* Returns
-    * True or false based on the uniqueness of the pairs
-
-**[Back to top](#table-of-contents)**
-
----
 ###Folder Structure
+
+Application Folder Structure
+
+![alt text][folderstructure]
+
+
+**[Back to top](#table-of-contents)**
+---
+###Database Setup File
+
+`src/catalogdb/database_setup.py` file has the database configuration for the database.
+
+To execute navigate to the `catalog` folder run the command 
+
+`python -m src.catalogdb.satabase_setup`
+
+
+---
+
+###Catalog Data Sctipt
+
+`src/catalogdb/catalog_data_script.py` file contains the basic / test data scripts. When run inserts the data into relevant tables.
+
+To execute navigate to the `catalog` folder run the command 
+
+`python -m src.catalogdb.catalog_data_script`
+
+---
+
+###Catalog Forms
+
+`src/ctalogutils/catalogforms.py`  this file contains the following `wtform` classes
+
+
+**UserForm:** This is used for add and edit users
+**AdminLoginForm** This form is used for the admin login functionality
+**CategoriesForm** This form is used for add and edit categories
+**ItemForm** This form is used for add and edit items.
+
+---
+
+###Custom Pagination
+
+`src/ctalogutils/ccustompagination.py`  this file contains cusotmPaginator class the is required for breaking up the big list of items / catefories / users
+
+
+
+### __init__(self, page, items_per_page, items):
+
+The constructor for the custom pagination class
+
+* Arguments:
+    * page : the current page number
+    * items_per_page :  how many records to show in each page
+    * items : the collection of items to be paginated
+    * self.current_page = page
+    * self.items_per_page = items_per_page
+    * self.total_count = len(items)
+    * self.items = items
+
+
+### totalPages(self):
+
+Returns the total number of pages required
+
+
+### hasPagesBefore(self):
+
+Return if there are pages before the current page number
+
+
+### hasPagesAfter(self):
+
+Returns true if there are pages after the current page.
+
+### getPageSlice(self):
+
+Returns the slice of the object according to the page
+
+
+---
+
+### DB Interface
+
+`src/ctalogutils/db_interface.py`  This file contains catalog_interface that has methods to connect to the database and fetch the results.
+
+### __init__(self, new_session):
+
+Constructor for the  interface and set the session
+
+* Attributes:
+    * new_session:      A database session
+
+---
+
+### get_all_categories(self):
+
+Returns a list of all the Categories from the DB.
+
+---
+
+### get_all_parent_categories(self):
+
+Returns a list of all the sub Categories from the DB.
+
+---
+
+### get_all_sub_categories(self):
+
+Returns a list of all the sub Categories from the DB.
+
+---
+
+### get_all_items(self, only_active=False):
+
+Returns a list of all the Categories from the DB.
+
+* Arguments:
+    * only_active: default is False searches for all items.If True searches only active items
+
+---
+
+### get_all_items_user(self, user_id):
+
+Returns all the Items for a user
+
+* Argument:
+    * user_id: user for whih the items have to be searched for
+
+---
+
+### add_categories(self, new_cat):
+
+Adds a new Categories record in the database
+
+* Arguments:
+    * new_cat: the new category object.
+
+---
+
+### add_item(self, new_item):
+
+Adds a new item record in the database
+
+* Arguments:
+    * new_item: new item object.
+
+---
+
+### get_item_by_id(self, item_id):
+
+Returns a item record by id
+
+* Argument:
+    * item_id: the id of the item to be searched
+
+---
+
+### get_items_by_category(self, db_category_name):
+
+Returns a items record by category
+
+* Arguments:
+    * db_category_name: name of the category to search the record
+
+---
+
+### get_category_by_name(self, db_category_name):
+
+Returns a category record by category name
+
+* Arguments:
+    * db_category_name: name of the category to search the record
+
+---
+
+### get_category_item_by_name(self, db_category_name, db_item_name):
+
+Returns a items record by category and item name
+
+* Arguments:
+    * db_category_name: name of the category to search the record
+    * db_item_name: The name of the item being searched
+
+---
+
+### get_latest_items(self, time_delta, item_limit):
+
+Returns latest items if not found it will return the latest from all the records. This returns only active Items
+
+* Arguments:
+    * time_delta: number of day, how old items are considered as latest
+    * item_limit: the number of records to be returned
+
+---
+
+### get_categories_by_id(self, category_id):
+
+Returns a Categories record by id
+
+* Argument:
+    * category_id : id of the category that is being searched
+
+---
+
+### update_item_details(self, item):
+
+Updates a item record by id
+
+* Argument:
+    * item: The item object that is being updated.
+
+---
+
+### update_categories_details(self, category):
+
+Updates a category record by id
+
+* Argument:
+    * category: the category object that is being updated
+
+---
+
+### get_all_user(self):
+
+Returns a list of all the users from the DB.
+
+---
+
+### update_user_login(self, existinguser):
+
+Updates the user login time.
+
+* Argument:
+    * existinguser: the user that is being updated
+
+---
+
+### add_user(self, new_user):
+
+Adds a new user record in the database
+
+* Argument:
+    * new_user: the new_user object that is being inserted
+
+---
+
+### get_user_by_id(self, user_id):
+
+Returns a user record by id
+
+* Arguments:
+    * user_id: the id of the user
+
+
+---
+
+### update_user_details(self, user):
+
+Updates a user record
+
+* Argument:
+    * user: the updated user object
+
+---
+
+
+### admin_login(self, adminuser):
+
+Return a user bases on the username and password
+
+* Argument:
+    * adminuser: the object containing the username and
+    * password of the admin user
+---
+
+### get_catalog_all(self):
+
+Return a user bases on the username and password
+
+---
+
+### delete_item(self, item_id):
+
+Deletes an item by id
+
+* Argument:
+    * item_id: id of the item being deleted
+
+---
+
+### delete_user(self, user_id):
+
+Deletes an user by id
+
+* Argument:
+    * user_id: id of the user being deleted
+
+---
+
+### delete_category(self, category_id):
+
+Deletes an category by id
+
+* Argument:
+    * category_id: id of the category being deleted
+
+---
+
+###Application File
+
+`catalog/application.py` the application file contains the flask configuration, routes and other supporting methods
+
+### update_category_list()
+
+Caches the list of categories in the session
+
+[Back to top](#table-of-contents)
+---
+
+### get_error_template(error_message):
+
+Render the error message template
+
+* Argument:
+    * error_message: message to be displayed on the page
+
+
+
+**[Back to top](#table-of-contents)**
+---
+
+### get_categories_list(page):
+
+Returns the category list template
+
+* Arguments:
+    * page: the page number of the list.
+
+* Returns:
+    The parsed template for the category list page
+
+**[Back to top](#table-of-contents)**
+---
+
+### get_item_list(page):
+
+Gets the list of items for a user, paginates and creates a template for display
+
+* Arguments:
+    * page: the page number of the list.
+
+* Returns:
+    The parsed template for the item list page
+
+**[Back to top](#table-of-contents)**
+---    
+
+### get_user_list(page):
+
+Gets the list of user, paginates and creates a template for display
+
+* Arguments:
+    * page: the page number of the list.
+
+* Returns:
+    The parsed template for the user list page
+    
+
+**[Back to top](#table-of-contents)**
+---
+
+### get_catalog(page):
+
+Creates a catalog template for display
+
+* Arguments:
+    * page: the page number of the list.
+* Returns:
+    The parsed template for the catalog page
+
+**[Back to top](#table-of-contents)**
+---
+
+### get_cataegory_listings(db_category_name, page):
+
+Creates a catalog template for a specific category
+
+* Arguments:
+      * page: the page number of the list.
+      * db_category_name: the name of the category
+* Returns:
+    The parsed template for the category list page
+
+
+**[Back to top](#table-of-contents)**
+---
+
+### get_cataegory_item(item_id):
+
+Renders the template for an Item in a category
+
+* Arguments:
+    * item_id: The item id for the record
+* Returns:
+    The parsed template for the catalog page
+
+**[Back to top](#table-of-contents)**
+---
+
+### get_cataloged_items()
+
+Returns the list of all active items in xml format.
+
+
+**[Back to top](#table-of-contents)**
+---
+
+### process_admin_login(adminuser):
+
+Sets the admin user information the session
+
+* Arguments:
+    * adminuser: the admin user object
+
+**[Back to top](#table-of-contents)**
+---
+
+### is_admin_loggedin()
+
+Returns `True` if an admin account is logged in
+
+**[Back to top](#table-of-contents)**
+---
+
+### is_someone_Loggedin()
+
+Returns `True` if someone is logged in
+
+**[Back to top](#table-of-contents)**
+---
+
+### verify_owner_login(item_user):
+
+Returns `True` if the current user is the owner of the item or a Admin user
+
+* Arguments:
+    * item_user:The user id of the owner of the item.
+
+**[Back to top](#table-of-contents)**
+---
+
+### other_page_urls(page):
+
+Creates the page URL for pagination
+
+* Arguments:
+    * page: the page number of the list.
+* Return the URL for the page.
+
+**[Back to top](#table-of-contents)**
+---
+
+### get_category_name(category_id):
+
+Returns the category name from the cached category_list
+
+* Arguments:
+    * category_id: the id of the category for which the name is required.
+
+* Returns: the category name from the cached category_list
+
+
+**[Back to top](#table-of-contents)**
+---
+
+### format_name_for_url(conversion_string):
+
+Strips the spaces and replaces them with `~` for passing these in the URL
+
+* Arguments:
+    * conversion_string: the string to be converted.
+* Returns: The converted string
+
+    
+**[Back to top](#table-of-contents)**
+---
+
+### unformat_name_for_url(conversion_string):
+
+Strips the `~` and replaces them with spaces
+
+* Arguments:
+    * conversion_string: the string to be converted.
+
+**[Back to top](#table-of-contents)**
+---
+
+### add_state()
+
+Validates and removes the CSRF token from post requests.
+
+**[Back to top](#table-of-contents)**
+---
+
+### generate_state()
+
+Generates a CSRF token adds this to the session. This is called from the templates
+
+
+**[Back to top](#table-of-contents)**
+---
+
+### create_external_url(url):
+
+Creates a fully qualified URL from the contextual URL
+
+* Arguments:
+        url: the url that needs to be converted.
+
+* Returns: A fully qualified URL
+
+
+**[Back to top](#table-of-contents)**
+---
+
+### is_active_nav(nav_item):
+
+Checks if a nav item is active
+* Arguments:
+    * nav_item : nav item  to be checked
+* Returns: 'active' or ""
+
+**[Back to top](#table-of-contents)**
+---
+
+### set_page_title(page_name):
+
+Sets the page title in the session
+
+**[Back to top](#table-of-contents)**
+---
+
+### catalog(page):
+
+Serves the paginated catalog
+* Arguments:
+    * page: the page number that is to be displayed the default value for page is 1
+
+**[Back to top](#table-of-contents)**
+---
+
+### category_listings(category_name, page):
+
+Serves the paginated list of items for a category
+* Arguments:
+    * category_name: name of the category for which item are to be searched
+    * page: the page number that is to be displayed the default value is page
+
+
+**[Back to top](#table-of-contents)**
+---
+
+### category_item(category_name, item_name, item_id):
+
+Serves the selected item
+* Arguments:
+    * category_name: name of the category for which item are to be searched
+    * item_name: the item name to be displayed in URL
+    * item_id: the item that is to be displayed
+
+**[Back to top](#table-of-contents)**
+---
+
+### categories(page):
+Serves the paginated list of categories
+
+* Arguments:
+    * page: the page number that is to be displayed the default value for page is 1
+
+**[Back to top](#table-of-contents)**
+---
+
+### items(page):
+Serves the paginated list of items
+* Arguments:
+    * page: the page number that is to be displayed the default value for page is 1
+
+**[Back to top](#table-of-contents)**
+---
+
+### users(page):
+
+Serves the paginated list of users
+* Arguments:
+    * page: the page number that is to be displayed the default value for page is 1
+
+
+**[Back to top](#table-of-contents)**
+---
+
+### edit_user(userid):
+
+serves the edit user functionality. Shows the populated form, when a post request is made the form is submitted and the user is updated
+* Arguments:
+    * userid: if user id is passed then user is edited else. Default is -1
+
+**[Back to top](#table-of-contents)**
+---
+
+### new_category(category_id):
+
+Serves the request for add and edit Categories. Shows the populated form when an category_id is passed when a post request is made the form is submitted and the user is  updated
+* Arguments:
+    * userid: if user id is passed then user is edited else. Default is -1
+
+**[Back to top](#table-of-contents)**
+---
+
+### new_item(item_id):
+
+Serves the request for add and edit items. Shows the populated form when an category_id is passed when a post request is made the form is submitted and the user is updated
+* Arguments:
+    * userid: if user id is passed then user is edited else. Default is -1
+
+**[Back to top](#table-of-contents)**
+---
+
+### confirm_delete(delete_type, delete_key):
+
+Shows user a confirmation message when the user tries to delete item user or category, if the a user or a category is deleted the items associated are also deleted.
+* Arguments:
+    * delete_type: if it is a items, categories or user delete.
+    * delete_key: the id of item , category or the user to be deleted
+
+**[Back to top](#table-of-contents)**
+---
+
+### delete_item(delete_type, delete_key):
+
+Once the user confirms the delete on above method the item, category or the user is delete. if the a user or a category is deleted the items associated are also deleted.
+* Arguments:
+    * delete_type: if it is a items, categories or user delete.
+    * delete_key: the id of item , category or the user to be deleted
+
+**[Back to top](#table-of-contents)**
+---
+
+### login()
+Server the login page and shows the login options for account login
+
+**[Back to top](#table-of-contents)**
+---
+
+### admin_login()
+
+Serves the admin user login
+
+**[Back to top](#table-of-contents)**
+---
+
+### gconnect()
+
+Process the google post login functionality
+
+**[Back to top](#table-of-contents)**
+---
+
+### admin_logout()
+
+Serves the admin logout functionality
+
+**[Back to top](#table-of-contents)**
+---
+
+### gdisconnect()
+
+Process the google dogout functionality
+
+
+**[Back to top](#table-of-contents)**
+---
+
+### catalog_xml()
+
+Returns the complete catalog in custom XML
+
+**[Back to top](#table-of-contents)**
+---
+
+### catalog_json()
+
+Returns the complete catalog in cusotm json format
+
+**[Back to top](#table-of-contents)**
+---
+
+### recent_items_feed()
+
+Returns a formatted ATOM RSS feed.
+
+**[Back to top](#table-of-contents)**
+---
+
+### page_not_found(e):
+
+Handles the invalid URLs
+
+**[Back to top](#table-of-contents)**
+---
+
+
+
 
 ##Database Structure
 
 ## Tables
 The diagram below shows the different tables and their relationship
-![alt text][adminLogin]
+
+![alt text][dbdesign]
 
 ### User
 This table contains the information about the users of the application.
@@ -787,5 +890,6 @@ Table contains the items information
 
 **[Back to top](#table-of-contents)**
 ---    
+[folderstructure]: https://github.com/v2saumb/catalog/blob/feature/dev-branch/docs/images/folderstructure "Folder Structure"
 [adminLogin]: https://github.com/v2saumb/catalog/blob/feature/dev-branch/docs/images/admin-login.gif "Admin Login Screen"
 [dbdesign]: https://github.com/v2saumb/catalog/blob/feature/dev-branch/docs/images/dbdiagram.gif "Database Design"

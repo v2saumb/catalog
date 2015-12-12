@@ -42,10 +42,12 @@
 						</div>
 						<div id="navbar" class="navbar-collapse collapse">
 							<ul class="nav navbar-nav">
-								<li class="active"><a href='{{url_for("catalog")}}' ><i class="fa fa-home"></i> Home</a></li>
-								<li><a href='{{url_for("categories")}}' class="navbar-nav"><i class="fa fa-list"></i> Categories</a></li>
-								<li><a href='{{url_for("items")}}' class="navbar-nav"><i class="fa fa-futbol-o"></i> Items</a></li>
-								<li class="dropdown">
+								<li class="{{is_active_nav('catalog')}}"><a href='{{url_for("catalog")}}' ><i class="fa fa-home"></i> Catalog</a></li>
+								<li class="{{is_active_nav('catagory-list')}}"><a href='{{url_for("categories")}}' class="navbar-nav"><i class="fa fa-list"></i> Categories</a></li>
+								<li class="{{is_active_nav('item-list')}}"><a href='{{url_for("items")}}' class="navbar-nav"><i class="fa fa-futbol-o"></i> Items</a></li>
+								<li class="dropdown {{is_active_nav('add-edit')}} 
+								{{is_active_nav('confirm-delete')}} {{is_active_nav('user')}}
+								{{is_active_nav('user')}}">
 									<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administration <span class="caret"></span></a>
 									<ul class="dropdown-menu">
 										<li><a href='{{url_for("users")}}' class="navbar-nav"><i class="fa fa-users"></i> Users</a></li>
@@ -65,7 +67,7 @@
 							{% if SESSION and SESSION.username  %}
 							<ul class="nav navbar-nav navbar-right">
 								<li class="user-image">
-									{% if SESSION.accountType == "ADMIN" %}
+									{% if SESSION.account_type == "ADMIN" %}
 										<div class="adminuser btn btn-danger "><i class="fa fa-user-secret"></i></div>
 									{% else %}
 										{% if SESSION.picture  %}

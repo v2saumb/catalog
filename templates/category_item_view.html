@@ -32,10 +32,13 @@
 				<div class="col-lg-12"><hr /><div class="bold"> Description</div>{{category_item.description}}</div>
 			</div>
 			<div class="row">
-				<div class="col-lg-8"></div>
+				<div class="col-lg-7"></div>
 				{% if  isSomeoneLoggedIn() and  verifyOwnerLogin(category_item.user_id) %}
+
 					<div class="col-lg-1"><a class='btn btn-primary ' href ='{{url_for("new_item", item_id=category_item.id)}}' ><i class="fa fa-pencil"></i> Edit</a></div>
-					<div class="col-lg-1"><button class='btn btn-danger ' href ='{{url_for("delete_item")}}' data-toggle="modal" data-target="#confirmDeleteModal"><i class="fa fa-trash-o"></i> Delete</button></div>
+					<div class="col-lg-1 nav-end">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+					<div class="col-lg-1">
+						<a class='btn btn-danger ' href ='{{url_for("confirm_delete",delete_type="items", delete_key=category_item.id)}}' ><i class="fa fa-trash-o"></i> Delete</a></div>
 					{%else%}
 					<div class="col-lg-2"></div>
 				{% endif %}

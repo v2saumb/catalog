@@ -30,10 +30,10 @@
     {%endif%}</div>
     {% if isAdminLoggedIn() and category.id > 0 %}
         <div class='col-md-2  align-right'>
-            <a class='btn btn-primary' href ='{{url_for("new_category",categoryId=category.id)}}' ><i class="fa fa-pencil"></i> Edit</a>
+            <a class='btn btn-primary' href ='{{url_for("new_category",category_id=category.id)}}' ><i class="fa fa-pencil"></i> Edit</a>
         </div>
         <div class='col-md-2  align-right'>
-            <a class='btn btn-danger' href ='{{url_for("delete_category")}}' ><i class="fa fa-trash-o"></i> Delete</a>
+            <a class='btn btn-danger ' href ='{{url_for("confirm_delete",delete_type="categories", delete_key=category.id)}}' ><i class="fa fa-trash-o"></i> Delete</a>
         </div>
     {% else %}
         <div class='col-md-2  align-right'>

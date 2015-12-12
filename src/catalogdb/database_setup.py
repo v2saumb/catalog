@@ -1,12 +1,10 @@
 import datetime
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy import String, Date, Boolean, DateTime
-
 from sqlalchemy.ext.declarative import declarative_base
-
 from sqlalchemy.orm import relationship
-
 from sqlalchemy import create_engine
+from sqlalchemy.orm import backref
 
 Base = declarative_base()
 
@@ -77,8 +75,10 @@ class Items(Base):
     lastupdated = Column(DateTime, onupdate=datetime.datetime.now)
     category_id = Column(Integer, ForeignKey('categories.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
-    category = relationship(Categories)
-    user = relationship(User)
+    category = relationship(Categories,
+                            backref=backref("items", cascade="all,delete"))
+    user = relationship(User,
+                        backref=backref("items", cascade="all,delete"))
     id = Column(Integer, primary_key=True)
 
     @property
