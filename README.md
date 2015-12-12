@@ -1,33 +1,12 @@
 ## Introduction
 A web application for catalog management. The Item Catalog web application that provides a list of items within a variety of categories, as well as provide a user registration and authentication system.
 
-###Program Features.
-	
-1. ** Responsive Web Interface: ** The web interface for the application is responsive and supports multiple screen sizes.
-1. ** Administration Module: ** Application supports an administration module. If your are logged in as an Administrator you can add new categories and modify items posted by any user. Admin user can enable and disable users, categories and items. 
-   ** Default Login Information for Administrator **
-
-| User Name | admin@itemcatalog.com |
-|:---------:|:---------------------:|
-|  Password |         123456        | 
-
-1. **Sub-Categories: ** Application supports one level of sub categories Like the category Electronics and Computers  can have sub categories Headphones, Video Games , Laptops and Tablets.
-1. **Pagination: ** Pagination of results for easy readability on most of the pages.
-1. **Moderation: ** Administrator can enable and disable users, categories and items. The disabled items and categories will not show up in the catalog but will still be available in the users 
-1. **Third Party Login :** The application allows you to use you google account to login.
-1. **CRUD :** The application allows a logged in user to perform CRUD operations on their items. An administrator can update all items.
-1. **Item Images :** The application allows a logged in user to specify a picture / image url for there items these images are used in the listings.
-1. **Latest Items :** The application displays latest items in a carousel on the home page. The number of Items and the cut of date can be changed in code. The default values are 7 days and 9 Items.
-1. **XML Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:8000/catalog.xml ** this is assuming the server is running on port 8000
-1. **JSON Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:8000/catalog.json ** this is assuming the server is running on port 8000
-1. **ATOM Feed :** The application has an option to get an ATOM RSS feed for the latest items from the catalog as an XML. You can use the following URL ** http://localhost:8000/newitems.atom ** this is assuming the server is running on port 8000
-1. **Readable URLs : ** most of the relevant urls are readable.
-
+---
 
 ## Table of Contents
 
 1. [Introduction ](#introduction)
-	- [Program Features](#program-features)
+    - [Program Features](#program-features)
 1. [Setup ](#setup)
     - [Prerequisites ](#prerequisites)
     - [Creating The Database ](#creating-the-database)   
@@ -44,6 +23,102 @@ A web application for catalog management. The Item Catalog web application that 
     - [src/catalogutils/db_interface.py](#db-interface)
     - [application.py](#application-file)
 1. [Database Structure ](#database-structure)
+
+---
+
+###Program Features.
+	
+* ** Responsive Web Interface: ** The web interface for the application is responsive and supports multiple screen sizes.
+
+![alt text][hpage]
+
+* ** Administration Module: ** Application supports an administration module. If your are logged in as an Administrator you can add new categories and modify items posted by any user. Admin user can enable and disable users, categories and items. 
+
+![alt text][admmnu]
+
+---
+
+![alt text][loginli]
+
+---
+
+![alt text][adminLogin]
+
+---
+
+   ** Default Login Information for Administrator **
+
+| User Name | admin@itemcatalog.com |
+|:---------:|:---------------------:|
+|  Password |         123456        | 
+
+* **Sub-Categories: ** Application supports one level of sub categories Like the category Electronics and Computers  can have sub categories Headphones, Video Games , Laptops and Tablets.
+
+![alt text][catli]
+
+---
+
+* **Pagination: ** Pagination of results for easy readability on most of the pages.
+
+![alt text][itmli]
+
+---
+
+* **Moderation: ** Administrator can enable and disable users, categories and items. The disabled items and categories will not show up in the catalog but will still be available in the users 
+
+![alt text][editu]
+
+---
+
+![alt text][edititm]
+
+---
+
+![alt text][catli]
+
+---
+
+* **Third Party Login :** The application allows you to use you google account to login.
+
+![alt text][loginli]
+
+---
+
+* **CRUD :** The application allows a logged in user to perform CRUD operations on their items. An administrator can update all items.
+
+![alt text][editu]
+
+---
+
+![alt text][delfonf]
+
+---
+
+* **Item Images :** The application allows a logged in user to specify a picture / image url for there items these images are used in the listings.
+
+![alt text][itmviewnoli]
+
+---
+
+![alt text][itmvli]
+
+* **Latest Items :** The application displays latest items in a carousel on the home page. The number of Items and the cut of date can be changed in code. The default values are 7 days and 9 Items.
+
+![alt text][hpage]
+
+---
+
+* **XML Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:8000/catalog.xml ** or using the Administration menu This is assuming the server is running on port 8000 
+
+
+* **JSON Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:8000/catalog.json ** or using the Administration menu This is assuming the server is running on port 8000 
+
+* **ATOM Feed :** The application has an option to get an ATOM RSS feed for the latest items from the catalog as an XML. You can use the following URL ** http://localhost:8000/newitems.atom ** or using the Administration menu This is assuming the server is running on port 8000 
+
+![alt text][admmnu]
+
+* **Readable URLs : ** most of the relevant urls are readable.
+
 
 ---
 
@@ -124,7 +199,7 @@ The application can now be accessed [http://localhost:8000]( http://localhost:80
 
 Application Folder Structure
 
-![alt text][folderstructure]
+![alt text][fstr]
 
 
 **[Back to top](#table-of-contents)**
@@ -890,6 +965,20 @@ Table contains the items information
 
 **[Back to top](#table-of-contents)**
 ---    
-[folderstructure]: https://github.com/v2saumb/catalog/blob/feature/dev-branch/docs/images/folderstructure "Folder Structure"
-[adminLogin]: https://github.com/v2saumb/catalog/blob/feature/dev-branch/docs/images/admin-login.gif "Admin Login Screen"
-[dbdesign]: https://github.com/v2saumb/catalog/blob/feature/dev-branch/docs/images/dbdiagram.gif "Database Design"
+[editus]: https://github.com/v2saumb/catalog/blob/master/docs/images/userlist.gif "Edit users"
+[loginli]: https://github.com/v2saumb/catalog/blob/master/docs/images/login-options.gif "Login Options"
+[itmvli]: https://github.com/v2saumb/catalog/blob/master/docs/images/viewitems-loggedin.gif "Logged in Items View"
+[itmviewnoli]: https://github.com/v2saumb/catalog/blob/master/docs/images/itemview.gif "Items view"
+[itmnoli]: https://github.com/v2saumb/catalog/blob/master/docs/images/items-nologin.gif "Items No Login"
+[itmli]: https://github.com/v2saumb/catalog/blob/master/docs/images/items-loggedin.gif "Items Logged in"
+[edititm]: https://github.com/v2saumb/catalog/blob/master/docs/images/item-edit.gif "Edit Items"
+[editu]: https://github.com/v2saumb/catalog/blob/master/docs/images/edit-user.gif "Edit User"
+[delfonf]: https://github.com/v2saumb/catalog/blob/master/docs/images/delete-conf.gif "Delete Confirmation"
+[catnoli]: https://github.com/v2saumb/catalog/blob/master/docs/images/cats-nologin.gif "Catagory Screen Without Login"
+[catli]: https://github.com/v2saumb/catalog/blob/master/docs/images/cat-loggedin.gif "Category Screen Logged In"
+[catitm]: https://github.com/v2saumb/catalog/blob/master/docs/images/cat-items.gif "Category Items Screen"
+[admmnu]: https://github.com/v2saumb/catalog/blob/master/docs/images/admin-menu.gif "Admin Menu"
+[hpage]: https://github.com/v2saumb/catalog/blob/master/docs/images/homepage.gif "Home Page"
+[fstr]: https://github.com/v2saumb/catalog/blob/master/docs/images/folderstructure.gif "Folder Structure"
+[adminLogin]: https://github.com/v2saumb/catalog/blob/master/docs/images/admin-login.gif "Admin Login Screen"
+[dbdesign]: https://github.com/v2saumb/catalog/blob/master/docs/images/dbdiagram.gif "Database Design"
