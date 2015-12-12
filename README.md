@@ -11,15 +11,17 @@ A web application for catalog management. The Item Catalog web application that 
 |:---------:|:---------------------:|
 |  Password |         123456        | 
 
-1. ** Sub-Categories: ** Application supports one level of sub categories Like the category Electronics and Computers  can have sub categories Headphones, Video Games , Laptops and Tablets.
-1. ** Pagination: ** Pagination of results for easy readability on most of the pages.
-1. ** Moderation: ** Administrator can enable and disable users, categories and items. The disabled items and categories will not show up in the catalog but will still be available in the users 
-1. ** Third Party Login :** The application allows you to use you google account to login.
-1. ** CRUD :** The application allows a logged in user to perform CRUD operations on their items. An administrator can update all items.
-1. ** Item Images :** The application allows a logged in user to specify a picture / image url for there items these images are used in the listings.
-1. ** Latest Items :** The application displays latest items in a carousel on the home page. The number of Items and the cut of date can be changed in code. The default values are 7 days and 9 Items.
-1. ** XML Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:5000/catalog/xml ** this is assuming the server is running on port 5000
-
+1. **Sub-Categories: ** Application supports one level of sub categories Like the category Electronics and Computers  can have sub categories Headphones, Video Games , Laptops and Tablets.
+1. **Pagination: ** Pagination of results for easy readability on most of the pages.
+1. **Moderation: ** Administrator can enable and disable users, categories and items. The disabled items and categories will not show up in the catalog but will still be available in the users 
+1. **Third Party Login :** The application allows you to use you google account to login.
+1. **CRUD :** The application allows a logged in user to perform CRUD operations on their items. An administrator can update all items.
+1. **Item Images :** The application allows a logged in user to specify a picture / image url for there items these images are used in the listings.
+1. **Latest Items :** The application displays latest items in a carousel on the home page. The number of Items and the cut of date can be changed in code. The default values are 7 days and 9 Items.
+1. **XML Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:8000/catalog.xml ** this is assuming the server is running on port 8000
+1. **JSON Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:8000/catalog.json ** this is assuming the server is running on port 8000
+1. **ATOM Feed :** The application has an option to get an ATOM RSS feed for the latest items from the catalog as an XML. You can use the following URL ** http://localhost:8000/newitems.atom ** this is assuming the server is running on port 8000
+1. **Readable URLs : ** most of the relevant urls are readable.
 
 
 ## Table of Contents
@@ -30,15 +32,13 @@ A web application for catalog management. The Item Catalog web application that 
     - [Prerequisites ](#prerequisites)
     - [Creating The Database ](#creating-the-database)   
     - [Populate Basic Data](#populate-basic-data)   
-    - [Testing ](#testing)
+    - [Running The Application ](#running-the-application)
 1. [Assumptions](#assumptions)
 1. [Extra Credit Features](#extra-credit-features)
 1. [Code Documentation ](#code-documentation)
+    - [Folder Structure ](#folder-structure)
 
 1. [Database Structure ](#database-structure)
-    - [Tables](#tables)
-    - [Functions ](#functions)
-    - [Views ](#views)
 
 ---
 
@@ -73,16 +73,14 @@ Asuming you are already logged in to vagrant ssh and have already created the da
 
 
 
-## Testing
+###Running The Application
 
-The file `tournament_test.py` contains the requited test to verify the functionality.
+Navigate to the folder where the repository is cloned.  Run the command to start the application
 
-Some new test cases have been added to verify the additional features this version of code supports
+`python application.py`
 
-** How to run the tests**
-1. Navigate to the `tournament` folder.
-1. Run the command `python tournament_test`
-1. Alternatively run command `python tournament_test >> tournamentTest.log` to pipe output to a log file for easy viewing of the log.
+The application can now be accessed [http://localhost:8000]( http://localhost:8000)
+
 
 
 **[Back to top](#table-of-contents)**
@@ -114,8 +112,9 @@ Some new test cases have been added to verify the additional features this versi
 1. ** Moderation: ** Administrator can enable and disable users, categories and items. The disabled items and categories will not show up in the catalog but will still be available in the users 
 1. ** Item Images :** The application allows a logged in user to specify a picture / image url for there items these images are used in the listings.
 1. ** Latest Items :** The application displays latest items in a carousel on the home page. The number of Items and the cut of date can be changed in code. The default values are 7 days and 9 Items.
-1. ** XML Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:5000/catalog/xml ** this is assuming the server is running on port 5000
-
+1. ** XML Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:8000/catalog.xml ** this is assuming the server is running on port 8000
+1. ** JSON Catalog :** The application has an option to get the entire catalog as an JSON. You can use the following URL ** http://localhost:8000/catalog.json ** this is assuming the server is running on port 8000
+1. ** ATOM Feed :** The application has an option to get an ATOM RSS feed for the latest items from the catalog as an XML. You can use the following URL ** http://localhost:8000/newitems.atom ** this is assuming the server is running on port 8000
 **[Back to top](#table-of-contents)**
 
 ---
@@ -732,258 +731,61 @@ Checks if the new pairs are unique.
 **[Back to top](#table-of-contents)**
 
 ---
+###Folder Structure
 
 ##Database Structure
 
 ## Tables
+The diagram below shows the different tables and their relationship
+![alt text][adminLogin]
 
-### TABLE resultmaster
-Contains the master mappings for the different result status
+### User
+This table contains the information about the users of the application.
 
-* Columns and Constraints
-    * id serial PRIMARY KEY
-    * name TEXT NOT NULL
-
-    1,'WON'
-    2,'LOST'
-    3,'DRAW'
-    4,'BYEWIN'
-
-
----
-
-### TABLE players
-Contain detail of the players with their unique id. This table should always contain one record with the id 0 
-with a dummy uses this is used for the bye scenarios.
-
-* Columns and Constraints
-    * player_id serial PRIMARY KEY
-    * player_name Text not null
-    * player_email Text
-
----
-
-### TABLE events 
-This table contains the names and Ids of the different events
-
-* Columns and Constraints
-    * id serial PRIMARY KEY
-    * name Text NOT NULL
-
----
-### TABLE eventplayers 
-Table eventplayers Contains information of which of the registered players are playing in a  tournament
-
-* Columns and Constraints
-    * id serial UNIQUE,
-    * event_id integer REFERENCES events ON DELETE CASCADE, 
-    * player_id integer REFERENCES players (player_id) ON DELETE CASCADE,
-    * PRIMARY KEY (event_id, player_id)
-
----
-### TABLE eventgamemapper
-Table eventgamemapper should have at least one row in this table and one row for number of games played per match
-
-* Columns and Constraints
-    * game_id serial UNIQUE
-    * event_id integer REFERENCES events(id) ON DELETE CASCADE
-    * game_number integer
-    * PRIMARY KEY (game_number, event_id)
----
-
-### TABLE eventgamerounds
-Table eventgamerounds should have at least one row in this table and one row for number of round played per match
-
-* Columns and Constraints
-    * round_id serial UNIQUE
-    * event_id integer REFERENCES events(id) ON DELETE CASCADE
-    * round_number integer
-    * PRIMARY KEY (round_number, event_id)
-
----
-
-### TABLE eventmatches
-
-Table eventmatches  table will contain the details for who plays against whom and for what event.
-The played field is used to check if the match has been played or not
-
-* Columns and Constraints
-    * event_id integer REFERENCES events ON DELETE CASCADE
-    * match_id serial UNIQUE
-    * player1_id integer REFERENCES eventplayers(id) ON DELETE CASCADE
-    * player2_id integer REFERENCES eventplayers(id) ON DELETE CASCADE
-    * played boolean DEFAULT FALSE, PRIMARY KEY (event_id, player1_id, player2_id)
-
----
-
-### TABLE playerscore
-Table playerscore Table contains the score for various eventmatches for each of the players registered for the event
-
-* Columns and Constraints
-    * event_id integer REFERENCES events ON DELETE CASCADE
-    * match_id integer REFERENCES eventmatches(match_id) ON DELETE CASCADE
-    * player_id integer REFERENCES eventplayers(id) ON DELETE CASCADE
-    * game_number integer
-    * round_number integer
-    * match_result integer REFERENCES resultmaster(id)
-    * game_score integer DEFAULT 0
-    * match_score integer DEFAULT 0
-    * PRIMARY KEY (player_id,match_id,game_number,round_number)
-    * FOREIGN KEY (game_number, event_id) REFERENCES eventgamemapper (game_number, event_id)
-    * FOREIGN KEY (round_number, event_id) REFERENCES eventgamerounds (round_number, event_id)
-
----
-### TABLE eventbyewinners
-Table eventbyewinners contains information if any player won by a bye of free win.
-
-* Columns and Constraints
-    * event_id integer REFERENCES events(id) ON DELETE CASCADE
-    * match_id integer REFERENCES eventmatches(match_id) ON DELETE CASCADE
-    * player_id integer REFERENCES players ON DELETE CASCADE
-    * PRIMARY KEY (event_id, player_id,match_id) 
+    * id - id of the user
+    * name - name of the user
+    * email -email of the user
+    * accounttype - account type to identify if it is admin 
+    * isActive - is item active and can be displayed in the catalod
+    * lastlogin - timestampof last login
+    * pictureurl - user picture url
+    * password - users password  required for admin users
+    * created - when the user was created
+    * lastupdated the last updated date of the record
 
 **[Back to top](#table-of-contents)**
-
 ---
 
-## Functions
----
-### FUNCTION playercount(eventId) 
+## Categories
+The table contains the information about the categories and sub-categories
 
-Returns the count of number of players in each event
-
-* Arguments:
-    * eventId: an integer event id.
-
-
----
-### FUNCTION matchresultcount(playerId,matchResultStatus,eventId) 
-
-Returns the count of number of occurrences for an specific player match result and event combination
-
-* Arguments:
-    * playerId: an integer  player id for which this count is required
-    * matchResultStatus: and integer representing the desired status
-    * eventId: an integer event id.
-
-* Returns:
-    * an integer count matching result status
-
----
-### FUNCTION playermatchcount(player_id,event_id)
-Returns the count of matches played by a player in an event
-
-* Arguments:
-    * player_id: an integer  player id for which this count is required
-    * event_id: an integer event id.
-
-* Returns:
-    * an integer count the number of matches played and scored.
-
----
-### FUNCTION getMatchCount(event_id) 
-Count the number of matches for an event.
-
-* Arguments:
-    * event_id: an integer event id.
-
-* Returns:
-    * an integer count the number of matches registered for an event.
-
-
----
-### FUNCTION getMatchesPlayedCount(event_id) 
-
-Count the number of matches already played for an event.
-
-* Arguments:
-    * event_id: an integer event id.
-
-* Returns:
-    * an integer count the number of matches registered and played for an event.
-
-
----
-### FUNCTION getTotalGamesCount(event_id) 
-Count the number of games allowed per match for an event.
-
-* Arguments:
-    * event_id: an integer event id.
-
-* Returns:
-    * an integer count the number of games allowed per round.
-
----
-### FUNCTION getTotalRoundsCount(event_id) 
-
-Count the number of rounds allowed per match for an event.
-
-* Arguments:
-    * event_id: an integer event id.
-
-* Returns:
-    * an integer count the number of rounds allowed per match for an event.
+    * id - Categoey Id
+    * name - name of the category
+    * parent - id of the parent category
+    * isActive - is the category Active
+    * hasChildren - id category has children
+    * created - when the user was created
+    * lastupdated the last updated date of the record
 
 **[Back to top](#table-of-contents)**
-
 ---
 
-## VIEWS
+## Items
 
----
-### VIEW match_details 
+Table contains the items information 
 
-Lists the matches along with the player name
-
-* Returns: A list of following fields
-    * event_id
-    * match_id
-    * player1
-    * player2 
-
----
-### VIEW player_standing 
-Lists the player standings ordered by the events and other required fields
-
-* Returns A row for each player registered for the event. with the following fields.
-    * event_id
-    * playerId
-    * player_name
-    * gamepoints: The total of game points for all the matches played for the event
-    * matchpoints:  The total of all the match point for the matched played for the event 
-    * totalpoints:  The total of matchpoints + gamepoints
-    * matchesplayed : The number of matches played
-    * won : The number of matches won
-    * lost: The number of matches lost
-    * draw: The number of matches bye
-    * bye: The number of matches bye
-    
+    * id - id of the item
+    * category_id - category id
+    * user_id - item owner
+    * name - name of the item
+    * description - item description
+    * pricerange - string price range
+    * pictureurl - picture url of th item
+    * isActive - is the item active
+    * created - when the user was created
+    * lastupdated the last updated date of the record
 
 **[Back to top](#table-of-contents)**
-
----
-
-
-## Introduction
-A simple web application for catalog management. The Item Catalog web application that provides a list of items within a variety of categories, as well as provide a user registration and authentication system.
-
-## Table of Contents
-
-1. [Introduction ](#introduction)
-1. [Setup ](#setup)
-    - [Prerequisites ](#prerequisites)
-    - [Creating The Database ](#creating-the-database)   
-    - [Testing ](#testing)
-1. [Assumptions](#assumptions)
-1. [Extra Credit Features](#extra-credit-features)
-1. [Code Documentation ](#code-documentation)
-1. [Database Structure ](#database-structure)
-    - [Tables](#tables)
-    - [Functions ](#functions)
-    - [Views ](#views)
-
----
-
-## Setup
-### Prerequisites
-
+---    
+[adminLogin]: https://github.com/v2saumb/catalog/blob/feature/dev-branch/docs/images/admin-login.gif "Admin Login Screen"
+[dbdesign]: https://github.com/v2saumb/catalog/blob/feature/dev-branch/docs/images/dbdiagram.gif "Database Design"
