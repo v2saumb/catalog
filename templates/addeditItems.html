@@ -1,0 +1,33 @@
+{% from "form_helper.html" import render_field %}
+<form method='post' action="{{url_for('new_item')}}" name="add_edit_item" >
+<div class="container item-form">
+	
+	{{ render_field(form.name) }}
+	{{ render_field(form.description) }} 
+	{{ render_field(form.pricerange) }} 
+	{{ render_field(form.pictureurl) }} 
+	{{ render_field(form.isActive) }}
+	{{ render_field(form.category_id) }}
+	{{ render_field(form.id) }}
+
+<div class="row">
+		<div class="col-md-3 form-label"> <label>Item Picture</label> </div>
+		<div class="col-md-9">
+			<img id="uploadedimage" src="{% if form['pictureurl'].data %}{{form['pictureurl'].data}} {% else %} {{url_for('static', filename='images/img-not-found.png')}} {%endif%}" class="item-pic-large"/>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-5"></div>
+		<div class="col-md-1">
+			<a href="" class="btn btn-default back-btn"><i class="fa fa-chevron-left"></i> Back</a>
+		</div>
+		<div class="col-md-1">
+			
+			<input type='submit' value='Save' class="btn btn-primary">
+		</div>
+		<div class="col-md-5"></div>
+	</div>
+</div>
+<input type="hidden" value="{{generate_state()}}" id="state" name="state" />
+</form>

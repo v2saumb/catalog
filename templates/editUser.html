@@ -1,0 +1,25 @@
+{% from "form_helper.html" import render_field %}
+<form method='post' action="{{url_for('edit_user')}}">
+	<div class="container item-form">
+		{{ render_field(form.name) }}
+		{{ render_field(form.email) }}
+		{{ render_field(form.isActive) }}
+		{{ render_field(form.pictureurl) }}
+		{{ render_field(form.accounttype) }}
+		{{ render_field(form.password) }}
+		{{ render_field(form.confirmpassword) }}
+		{{ render_field(form.id) }}
+		<div class="row">
+			<div class="col-xs-5"></div>
+			<div class="col-xs-1">
+				<a href="" class="btn btn-default back-btn"><i class="fa fa-chevron-left"></i> Back</a>
+			</div>
+			<div class="col-xs-1">
+				
+				<input type='submit' value='Update' class="btn btn-primary">
+			</div>
+			<div class="col-xs-5"></div>
+		</div>
+	</div>
+	<input type="hidden" value="{{generate_state()}}" id="state" name="state" />
+</form>

@@ -1,0 +1,21 @@
+{% macro render_item(latest_item) %}
+{% for idx,item in latest_item %}
+  {% if idx ==0 or idx== 3 or idx == 6%}
+    <div class="row">
+    {% endif %}
+    <div class="col-lg-4 catalog-item" data-items-url="{{url_for('category_item',
+      category_name=format_name_for_url(get_category_name(item.category_id)) ,
+      item_name=format_name_for_url(item.name), item_id=item.id  )}}">
+    <img class="img-circle" src="{% if item.pictureurl %}{{item.pictureurl}} {% else %} {{url_for('static', filename='images/img-not-found.png')}} {%endif%}" width="140" height="140">
+      <h4 class="item-name">{{item.name}}</h4>
+      <p>{{item.pricerange}}</p>
+      <p class="strong">{{get_category_name(item.category_id)}}</p>
+      <p><a class="btn btn-default" href="{{url_for('category_item',
+        category_name=format_name_for_url(get_category_name(item.category_id)) ,
+      item_name=format_name_for_url(item.name),item_id=item.id )}}" role="button">View details &raquo;</a></p>
+    </div>
+    
+    {% if idx ==2 or idx== 5 or idx == 9%}
+    </div >
+  {% endif %}  {% endfor %}
+{% endmacro %}

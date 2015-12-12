@@ -1,0 +1,27 @@
+<div class="container">
+<div class="row">
+<div class='col-xs-12 align-right'>
+    <div class=pagination>
+        {% if pagination.hasPagesBefore %}
+            <a href="{{ other_page_urls(pagination.current_page - 1)
+            }}" class="btn btn-primary"><i class="fa fa-chevron-left"></i></a>
+        {% endif %}
+        {%- for page in pagination.pages_list() %}
+        {% if page and pagination.totalPages > 1 %}
+            {% if page != pagination.current_page %}
+                <a href="{{ other_page_urls(page) }}" class="btn btn-primary">{{ page }}</a>
+            {% else %}
+                <strong class="btn btn-default">{{ page }}</strong>
+            {% endif %}
+        {% else %}
+            <span class=ellipsis>…</span>
+        {% endif %}
+        {%- endfor %}
+        {% if pagination.hasPagesAfter %}
+            <a href="{{ other_page_urls(pagination.current_page + 1)
+            }}" class="btn btn-primary"><i class="fa fa-chevron-right"></i></a>
+        {% endif %}
+    </div>
+</div>
+</div>
+</div>

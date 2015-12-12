@@ -1,0 +1,45 @@
+<div class="container users-container">
+<div class="row">
+    <div class='col-md-12 heading'><h1> All Users </h1></div>
+</div>
+<div class="row">
+    <div class='col-md-1 header-el'>ID</div>
+    <div class='col-md-2 header-el'> Name </div>
+    <div class="col-md-2 header-el"> Email </div>
+    <div class='col-md-1 header-el'>Account Type </div>
+    <div class='col-md-1 header-el'>Active</div>
+    <div class='col-md-1 header-el'> Last Login </div>
+    <div class='col-md-2 header-el'> Dates </div>
+    <div class='col-md-2 header-el'>{% if isSomeoneLoggedIn()  %} Action(s) {% endif %}</div>
+</div>
+<hr />
+{%for user in users %}
+<div class="row user-row">
+    <div class='col-md-1 text-center'>{{user.id}}</div>
+    <div class='col-md-2 text-center'>{{user.name}}</div>
+    <div class="col-md-2 text-center">{{user.email}}
+    </div>
+    <div class='col-md-1 text-center'>{{user.accounttype}}</div>
+    <div class='col-md-1 text-center'>{% if user.isActive%}<i class="fa fa-check text-success"></i>{%else%}<i class="fa fa-ban text-danger"></i>{%endif%}</div>
+    <div class='col-md-1 '>{{user.lastlogin.strftime("%b %d, %Y")}}</div>
+    <div class='col-md-2 '><p><strong >Created: </strong>{{user.created.strftime("%b %d, %Y %H:%M")}}
+    {% if user.lastupdated%}</p>
+    <p>        <strong >Last updated: </strong> {{user.lastupdated.strftime("%b %d, %Y %H:%M")}} </p>
+    {%endif%}
+    {% if isSomeoneLoggedIn()  %}</div>
+        <div class='col-md-1'>
+            <a class='btn btn-primary' href ='{{url_for("edit_user",userid=user.id)}}' ><i class="fa fa-pencil"></i> Edit</a>
+        </div>
+        <div class='col-md-1'>
+            {% if user.accounttype != 'ADMIN'  %}
+            <a class='btn btn-danger ' href ='{{url_for("confirm_delete",delete_type="users", delete_key=user.id)}}' ><i class="fa fa-trash-o"></i> Delete</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class='col-md-2'>
+            
+        </div>
+    {% endif %}
+</div>
+{% endfor %}
+</div>

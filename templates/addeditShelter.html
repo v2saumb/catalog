@@ -1,0 +1,26 @@
+{% from "form_helper.html" import render_field %}
+<form method='post' action="/addEditShelter">
+	
+	{{ render_field(form.name) }}
+	{{ render_field(form.address) }}
+	{{ render_field(form.city) }}
+	{{ render_field(form.state) }}
+	{{ render_field(form.email) }}
+	{{ render_field(form.zipCode) }}
+	{{ render_field(form.website) }}
+	{{ render_field(form.current_occupancy) }}
+	{{ render_field(form.maximum_capacity) }}
+	{{ render_field(form.id) }}
+	<div class="row">
+		<div class="col-xs-5"></div>
+		<div class="col-xs-1">
+			<input type='reset' value='Reset' class="btn btn-default">
+		</div>
+		<div class="col-xs-1">
+			
+			<input type='submit' value='Register' class="btn btn-primary">
+		</div>
+		<div class="col-xs-5"></div>
+	</div>
+	<input type="hidden" value="{{generate_state()}}" id="state" name="state" />
+</form>

@@ -1,0 +1,26 @@
+<!-- FOOTER -->
+<footer >
+	<div class="container">
+		<p class="pull-right"><a href="" id="back-to-top">Back to top</a></p>
+		<p>&copy; 2015 Sams Catalog Inc. &middot; <a href="{{url_for('catalog_xml')}}" target="_blank">Catalog XML Catalog</a> &middot; <a href="{{url_for('catalog_json')}}" target="_blank">Catalog JSON</a> &middot; <a href="{{url_for('recent_items_feed')}}" target="_blank">Latest Items Atom Feed</a> </p>
+	</div>
+</footer>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+{% if request.path=="/login"%}
+	<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+	<script src="//apis.google.com/js/platform.js?onload=start"> </script>
+	<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+{% endif %}
+<script>
+	var jqurl= "{{url_for('static' ,filename='js/lib/vendor/jquery.min.js')}}";
+window.jQuery || document.write('<script src="'+ jqurl+'"><\/script>')</script>
+<script src="{{url_for('static',filename='js/lib/bootstrap.min.js')}}"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script src="{{url_for('static',filename='js/lib/vendor/holder.min.js')}}"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{{url_for('static',filename='js/lib/ie10-viewport-bug-workaround.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/global.js')}}"></script>
+</body></html>
