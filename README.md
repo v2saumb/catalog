@@ -36,9 +36,15 @@ A web application for catalog management. The Item Catalog web application that 
 
 ![alt text][admmnu]
 
+---
+
 ![alt text][loginli]
 
+---
+
 ![alt text][adminLogin]
+
+---
 
    ** Default Login Information for Administrator **
 
@@ -50,32 +56,57 @@ A web application for catalog management. The Item Catalog web application that 
 
 ![alt text][catli]
 
+---
+
 * **Pagination: ** Pagination of results for easy readability on most of the pages.
 
 ![alt text][itmli]
+
+---
 
 * **Moderation: ** Administrator can enable and disable users, categories and items. The disabled items and categories will not show up in the catalog but will still be available in the users 
 
 ![alt text][editu]
 
+---
+
 ![alt text][edititm]
 
+---
+
 ![alt text][catli]
+
+---
 
 * **Third Party Login :** The application allows you to use you google account to login.
 
 ![alt text][loginli]
 
+---
+
 * **CRUD :** The application allows a logged in user to perform CRUD operations on their items. An administrator can update all items.
-* **Item Images :** The application allows a logged in user to specify a picture / image url for there items these images are used in the listings.
 
 ![alt text][editu]
 
+---
+
 ![alt text][delfonf]
+
+---
+
+* **Item Images :** The application allows a logged in user to specify a picture / image url for there items these images are used in the listings.
+
+![alt text][itmviewnoli]
+
+---
+
+![alt text][itmvli]
 
 * **Latest Items :** The application displays latest items in a carousel on the home page. The number of Items and the cut of date can be changed in code. The default values are 7 days and 9 Items.
 
 ![alt text][hpage]
+
+---
 
 * **XML Catalog :** The application has an option to get the entire catalog as an XML. You can use the following URL ** http://localhost:8000/catalog.xml ** or using the Administration menu This is assuming the server is running on port 8000 
 
@@ -88,9 +119,7 @@ A web application for catalog management. The Item Catalog web application that 
 
 * **Readable URLs : ** most of the relevant urls are readable.
 
-![alt text][itmviewnoli]
 
-![alt text][itmnoli]
 ---
 
 
