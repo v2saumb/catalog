@@ -306,7 +306,8 @@ ul.form-error li {
     text-align: right;
 }
 
-.row.disabled {
+.row.disabled,
+.login-item.disabled {
     background: repeating-linear-gradient( -45deg, #fff, #eee 10px, #ddd 5px, #bbb 5px);
 }
 

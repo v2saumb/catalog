@@ -375,7 +375,14 @@ def add_state():
         try:
             token = login_session['state']
             # Skip the token deletion as it is used in the gconnect code.
-            if '/gconnect' not in request.path:
+            exceptions = ['/gconnect', '/fbconnect']
+            isException = False
+            for ex in exceptions:
+                if ex in request.path:
+                    isException = True
+                    break
+
+            if not isException:
                 login_session.pop('state', None)
         except:
             token = None
@@ -1013,6 +1020,19 @@ def admin_logout():
     return redirect(url_for("catalog"))
 
 
+@app.route('/adminlogout')
+def facebook_logout():
+    """
+    serves the admin logout functionality
+    """
+    login_session['username'] = None
+    login_session['email'] = None
+    login_session['account_type'] = None
+    login_session['userid'] = None
+    flash("Logged out successfully !", category="info")
+    return redirect(url_for("catalog"))
+
+
 @app.route('/gdisconnect')
 def gdisconnect():
     """
@@ -1020,9 +1040,15 @@ def gdisconnect():
     """
     app.logger.debug("Verifying  the type of account")
     # check if this is an admin account and logout through that
-    account_type = login_session['account_type'] or None
+    try:
+        account_type = login_session['account_type'] or None
+    except:
+        account_type = None
+
     if account_type == "ADMIN":
         return redirect(url_for("admin_logout"))
+    elif account_type == "FACEBOOK":
+        return redirect(url_for("facebook_logout"))
 
     access_token = login_session['access_token']
     if access_token is None:
@@ -1112,6 +1138,45 @@ def recent_items_feed():
                  updated=item.lastupdated or item.created,
                  published=item.created)
     return feed.get_response()
+
+
+@app.route('/fbconnect', methods=['POST'])
+def fbconnect():
+    """
+     Process the google post login functionality
+    """
+
+    # Validate state token
+    app.logger.debug("in fbconnect")
+    app.logger.debug("from request" + request.args.get('state'))
+    app.logger.debug("from session" + login_session['state'])
+    if request.args.get('state') != login_session['state']:
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    # obtain user info
+    rawdata = request.data
+    data = json.loads(rawdata)
+    app.logger.debug(data['name'])
+    login_session['username'] = data['name']
+    # my current permissions do not allow picture
+    login_session['picture'] = None
+    login_session['email'] = str(data['id']) + '@itemcatalog.com'
+    login_session['account_type'] = "FACEBOOK"
+    newUser = User(name=login_session['username'],
+                   email=login_session['email'],
+                   accounttype="FACEBOOK", lastlogin=datetime.date.today(),
+                   pictureurl=login_session['picture'])
+    user_id = catalogDb.add_user(newUser)
+    login_session['userid'] = user_id
+    output = ""
+    output += '<h1>Welcome, '
+    output += login_session['username']
+    output += '!</h1>'
+    flash("You are now logged in as %s" %
+          login_session['username'], category="success")
+    print "done!"
+    return output
 
 
 @app.errorhandler(404)

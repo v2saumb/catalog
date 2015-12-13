@@ -6,7 +6,8 @@
 			<ul class="left-nav-ul" id="cat_{{parent.id}}">
 				{% for subcat in sub_categories %}
 					{% if subcat.parent == parent.id %}
-						<li class="left-nav-item" id="subcat_{{subcat.id}}" data-items-url="{{url_for('category_listings', category_name=format_name_for_url(subcat.name)) }}" >
+						<li class="left-nav-item {{is_active_nav(format_name_for_url(subcat.name))}}
+						" id="subcat_{{subcat.id}}" data-items-url="{{url_for('category_listings', category_name=format_name_for_url(subcat.name)) }}" >
 						{{subcat.name}}</li>
 						{%endif%}
 					{% endfor %}

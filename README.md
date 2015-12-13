@@ -172,8 +172,11 @@ The application can now be accessed [http://localhost:8000]( http://localhost:80
 1. If the user is deleted the items associated are also deleted.
 1. If the category is deleted the items associated are also deleted.
 1. The category names are unique.
-1. Only administrators are allowed to create new categories.
+1. Only administrators are allowed to create and edit categories.
 1. If latest items are not available as the specified time limit, the latest items are decided based on the created date.
+1. The parent category "Parent Category" can not  be deleted.
+1. Logged in users can delete only the items they own.
+1. **The Facebook oAuth implementation is not complete.**. The login works and the user is allowed in the app. The oAuth step 2 is not implemented yet (ran out of time). 
 
 
 **[Back to top](#table-of-contents)**
