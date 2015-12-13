@@ -1,7 +1,7 @@
 <!-- FOOTER -->
 <footer >
 	<div class="container">
-		<p class="pull-right"><a href="" id="back-to-top">Back to top</a></p>
+		<p class="pull-right"><a id="back-to-top">Back to top</a></p>
 		<p>&copy; 2015 Sams Catalog Inc. &middot; <a href="{{url_for('catalog_xml')}}" target="_blank">Catalog XML Catalog</a> &middot; <a href="{{url_for('catalog_json')}}" target="_blank">Catalog JSON</a> &middot; <a href="{{url_for('recent_items_feed')}}" target="_blank">Latest Items Atom Feed</a> </p>
 	</div>
 </footer>
@@ -23,4 +23,5 @@ window.jQuery || document.write('<script src="'+ jqurl+'"><\/script>')</script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="{{url_for('static',filename='js/lib/ie10-viewport-bug-workaround.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='js/global.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/JSON.js')}}"></script>
 </body></html>

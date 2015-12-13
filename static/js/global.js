@@ -31,9 +31,13 @@
     if ($("form[name='category_form']") !== undefined) {
         $("form[name='category_form']").find("#name").bind("keydown", inputValidator);
     }
+        /* bind validation for category name */
+    if ($("form[name='add_edit_item']") !== undefined) {
+        $("form[name='add_edit_item']").find("#name").bind("keydown", inputValidator);
+    }
     /* bind method to scroll top */
     if ($("#back-to-top") !== undefined) {
-        $("#back-to-top").find("#name").bind("click", goToTop);
+        $("#back-to-top").bind("click", goToTop);
     }
     /* Auto close alerts */
     $("#alert-message").fadeTo(2000, 500).slideUp(500, function() {
@@ -46,9 +50,11 @@
 
     /*function to scroll to the top of the page*/
     function goToTop(event) {
-        $("body").animate({
-            scrollTop: 0
-        }, "fast");
+        $("html, body").animate({
+            scrollTop: $('#backtotop').offset().top
+        }, 1500);
+        event.preventDefault();
+        event.stopPropagation();
         return false;
     }
 

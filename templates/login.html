@@ -8,6 +8,7 @@
     <div class="col-md-3 login-item">
         <div class="img-circle google" ><i class="fa fa-google-plus"></i></div>
         <h4 class="push-down">Login With Google Account</h4>
+        <p>Use your google account now!</p>
         <!-- GOOGLE PLUS SIGN IN BUTTON-->
         <p><div id="signInButton">
             <span class="g-signin"
@@ -22,17 +23,20 @@
         </div>
         <!--END GOOGLE PLUS SIGN IN BUTTON --></h4>
     </div>
-    <div class="col-md-3 login-item disabled">
+    <div class="col-md-3 login-item ">
         <div class="img-circle blue" ><i class="fa fa-facebook-square"></i></div>
         <h4 class="push-down">Login With Facebook Account</h4>
          <p>Coming Soon!</p>   
-       <p> <a href="" class="btn btn-primary disabled"><i class="fa fa-facebook-square large-icon"></i></i> Facebook</a></p>
+       <p> <!-- <a href="{{url_for('facebook_login')}}" class="btn btn-primary "><i class="fa fa-facebook-square large-icon"></i></i> Facebook</a> -->
+        <div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="false" on-login="statusChangeCallback" data-scope="public_profile,email"></div>
+       </p>
     </div>
      <div class="col-md-3 login-item">
         </div>
     <div class="col-md-3 login-item">
         <div class="img-circle blue" ><i class="fa fa-user-secret"></i></div>
         <h4 class="push-down">Login As An Administrator</h4>
+        <p>Manage items categories and more!</p>
         <p><a href="{{url_for('admin_login')}}" class="btn btn-primary "><i class="fa fa-user-secret large-icon"></i> Administrator</a></p>
         
     </div>
@@ -70,4 +74,68 @@
             });
         }
     }
+</script>
+<script>
+  // This is called with the results from from FB.getLoginStatus().
+  function statusChangeCallback(response) {
+      console.log('statusChangeCallback');
+      console.log(response);
+      // The response object is returned with a status field that lets the
+      // app know the current login status of the person.
+      // Full docs on the response object can be found in the documentation
+      // for FB.getLoginStatus().
+      if (response.status === 'connected') {
+          // Logged into your app and Facebook.
+          FB.api('/me', function(fbresp) {
+              var req = {name:fbresp.name,id: fbresp.id };
+              console.log('Successful login for: ', req);
+
+              $.ajax({
+                  type: 'POST',
+                  url: '/fbconnect?state={{STATE}}',
+                  processData: false,
+                  data: JSON.stringify(req),
+                  contentType: 'application/json; charset=utf-8',
+                  success: function(result) {
+                      // Handle or verify the server response if necessary.
+                      if (result) {
+                          $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...')
+                          setTimeout(function() {
+                              window.location.href = "/catalog";
+                          }, 1000);
+
+                      } else if (authResult['error']) {
+                          $('#result').html('There was an error: ' + authResult['error']);
+                      } else {
+                          $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+                      }
+                  }
+
+              });
+          });
+
+
+      }
+  }
+
+  window.fbAsyncInit = function() {
+      FB.init({
+          appId: '737209076410240',
+          xfbml: true,
+          version: 'v2.5'
+      });
+  };
+
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
 </script>
