@@ -31,7 +31,7 @@ from oauth2client.client import AccessTokenCredentials
 GOOGLE_FILE = '/var/www/samscatalogapp/samscatalogapp/src/json/client_secrets.json'
 
 app = Flask(__name__)
-engine = create_engine('postgresql://cataloga:catalog@localhost/catalogdb')
+engine = create_engine('postgresql://catalog:catalog@localhost/catalogdb')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
