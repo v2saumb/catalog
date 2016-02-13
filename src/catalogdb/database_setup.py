@@ -74,7 +74,7 @@ class Items(Base):
     created = Column(DateTime, default=datetime.datetime.now)
     lastupdated = Column(DateTime, onupdate=datetime.datetime.now)
     category_id = Column(Integer, ForeignKey('categories.id'))
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('cataloguser.id'))
     category = relationship(Categories,
                             backref=backref("items", cascade="all,delete"))
     user = relationship(User,
