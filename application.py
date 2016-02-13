@@ -26,11 +26,11 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from oauth2client.client import AccessTokenCredentials
 
-DATABASE_FILEPATH = curdir + sep + 'src/catalogdb/catalogdatabase.db'
+
 GOOGLE_FILE = curdir + sep + 'src/json/client_secrets.json'
 
 app = Flask(__name__)
-engine = create_engine('sqlite:///' + DATABASE_FILEPATH)
+engine = create_engine('postgresql://cataloga:catalog@localhost/catalogdb')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
