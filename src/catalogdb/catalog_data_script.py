@@ -1,12 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Categories, User, Items
-from random import randint
 import datetime
-import random
 
-
-engine = create_engine('sqlite:///src/catalogdb/catalogdatabase.db')
+engine = create_engine('sqlite://catalog:catalog@localhost/catalogdb')
 
 Base.metadata.bind = engine
 
