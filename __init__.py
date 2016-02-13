@@ -28,7 +28,7 @@ from oauth2client.client import FlowExchangeError
 from oauth2client.client import AccessTokenCredentials
 
 
-GOOGLE_FILE = curdir + sep + 'src/json/client_secrets.json'
+GOOGLE_FILE = '/var/www/samscatalogapp/samscatalogapp/src/json/client_secrets.json'
 
 app = Flask(__name__)
 engine = create_engine('postgresql://cataloga:catalog@localhost/catalogdb')
