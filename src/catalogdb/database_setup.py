@@ -98,5 +98,5 @@ class Items(Base):
 
 
 # These line should be at the end of the file.
-engine = create_engine('sqlite:///src/catalogdb/catalogdatabase.db')
+engine = create_engine('sqlite://catalog:catalog@localhost/catalogdb')
 Base.metadata.create_all(engine)
