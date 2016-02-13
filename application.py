@@ -46,7 +46,7 @@ CLIENT_ID = json.loads(
     open(GOOGLE_FILE, 'r').read())['web']['client_id']
 
 # Application Name
-APPLICATION_NAME = "Sams Item Catalog"
+APPLICATION_NAME = "Sams Catalog App"
 
 # secret key for the sessions
 APP_SECRET_KEY = 'thisisaseceretkeythisisaseceretkeythisisaseceretkey'
@@ -1129,7 +1129,7 @@ def recent_items_feed():
 
         feed.add(item.name, unicode(text),
                  content_type='html',
-                 author="Sams Item Catalog",
+                 author="Sams Catalog App",
                  url=create_external_url(
             url_for('category_item',
                     category_name=format_name_for_url(
