@@ -1188,7 +1188,7 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     app.secret_key = APP_SECRET_KEY
-    app.debug = True
+    app.debug = False
     app.permanent_session_lifetime = timedelta(minutes=5)
     app.logger.debug("Starting The Server -- catalog app")
     app.run()
