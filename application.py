@@ -1,4 +1,5 @@
-# webserver for the restaurant menu application
+"""Webserver for the Catalog application."""
+
 import random
 import string
 import httplib2
@@ -26,11 +27,11 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from oauth2client.client import AccessTokenCredentials
 
-DATABASE_FILEPATH = curdir + sep + 'src/catalogdb/catalogdatabase.db'
-GOOGLE_FILE = curdir + sep + 'src/json/client_secrets.json'
+
+GOOGLE_FILE = '/var/www/samscatalogapp/samscatalogapp/src/json/client_secrets.json'
 
 app = Flask(__name__)
-engine = create_engine('sqlite:///' + DATABASE_FILEPATH)
+engine = create_engine('postgresql://catalog:catalog@localhost/catalogdb')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
@@ -45,7 +46,7 @@ CLIENT_ID = json.loads(
     open(GOOGLE_FILE, 'r').read())['web']['client_id']
 
 # Application Name
-APPLICATION_NAME = "Sams Item Catalog"
+APPLICATION_NAME = "Sams Catalog App"
 
 # secret key for the sessions
 APP_SECRET_KEY = 'thisisaseceretkeythisisaseceretkeythisisaseceretkey'
@@ -1128,7 +1129,7 @@ def recent_items_feed():
 
         feed.add(item.name, unicode(text),
                  content_type='html',
-                 author="Sams Item Catalog",
+                 author="Sams Catalog App",
                  url=create_external_url(
             url_for('category_item',
                     category_name=format_name_for_url(

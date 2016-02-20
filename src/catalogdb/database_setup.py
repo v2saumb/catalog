@@ -10,7 +10,7 @@ Base = declarative_base()
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'cataloguser'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
@@ -74,7 +74,7 @@ class Items(Base):
     created = Column(DateTime, default=datetime.datetime.now)
     lastupdated = Column(DateTime, onupdate=datetime.datetime.now)
     category_id = Column(Integer, ForeignKey('categories.id'))
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('cataloguser.id'))
     category = relationship(Categories,
                             backref=backref("items", cascade="all,delete"))
     user = relationship(User,
@@ -98,5 +98,5 @@ class Items(Base):
 
 
 # These line should be at the end of the file.
-engine = create_engine('sqlite:///src/catalogdb/catalogdatabase.db')
+engine = create_engine('postgresql://catalogadmin:catalogadmin@localhost/catalogdb')
 Base.metadata.create_all(engine)
